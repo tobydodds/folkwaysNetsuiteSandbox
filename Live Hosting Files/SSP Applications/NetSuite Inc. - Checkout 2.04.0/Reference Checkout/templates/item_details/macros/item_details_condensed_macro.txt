@@ -1,0 +1,40 @@
+<% registerMacro('itemDetailsCondensed', function (options) { %>
+	<%	var line = options.line
+		,	application = options.application
+		,	show_action_buttons = options.showActionButtons
+		,	action_macro = _.isFunction(options.actionMacro) ? options.actionMacro : function(){}
+		,	show_item_details = options.showItemsDetails //Quantiy and amount
+		,	item = line.get('item');
+	%>
+	<div class="item-line row-fluid clearfix" data-id="<%= item.get('internalid') %>" >
+		<div class="item-line-condensedview-style">
+			<div class="span1 item-image" >
+				<img src="<%= application.resizeImage(item.get('_thumbnail').url, 'tinythumb') %>" class="item-image-control" alt="<%= item.get('_thumbnail').altimagetext %>">
+			</div>
+			<div class="span4 item-property-container">
+				<div class="item-displayname"><span> <%= item.get('_name') %> </span></div>
+				<div class="item-unitprice"><%= SC.macros.showItemPrice(line.getPrice(),line.get('item').getStockInfo().isInStock) %></div>
+				<div class="item-id"><%= _('<span class="item-label" data-type="sku-label">SKU:</span> #<span data-type="sku-value">$(0)</span>').translate(item.get('_sku')) %></div>
+				<div data-type="item-options-container">
+					<%= item.renderAllOptionSelected() %>
+				</div>
+			</div>
+
+			<% if (show_item_details) { %>
+			<div class="span3 item-details">
+				<div class="item-quantity"><%= _('<span class="item-label">Quantity:</span> <span data-type="item-quantity">$(0)</span>').translate(line.get('quantity')) %></div>
+				<div class="item-total">
+					<%= _('<span class="item-label">Amount:</span> <span data-type="item-amount">$(0)</span>').translate(line.get('total_formatted')) %>
+					<% if( line.get('amount') > line.get('total') ) {%>
+						<small class="muted crossed"><%=  line.get('amount_formatted') %></small>
+					<% } %>
+				</div>
+			</div>
+			<% } %>
+
+			<div class="span4 button-actions">
+				<%= action_macro(options) %>
+			</div>
+		</div>
+	</div>
+<% }) %>

@@ -1,0 +1,46 @@
+<% registerMacro('trackingNumbers', function (options) { %>
+	<%
+		var tracking_numbers = options.trackingnumbers
+		,	show_content_on_empty = options.showContentOnEmpty
+		,	content_class = options.contentClass
+		,	collapse_elements = options.collapseElements
+		,	tracking_name_service = _.isFunction(options.trackingNameService) ?
+					options.trackingNameService :
+					function () { return _('Other').translate(); }
+		,	tracking_url_service = _.isFunction(options.trackingURLService) ?
+					options.trackingURLService :
+					function () { return '#'; };
+	%>
+
+	<% if (!tracking_numbers.length) { %>
+		<% if (show_content_on_empty) { %>
+			<span class="<%= content_class %>">
+				<%= _('Not Available').translate() %>
+			</span>
+		<% } %>
+	<% } else if (tracking_numbers.length === 1) { %>
+		<%= tracking_name_service(tracking_numbers[0]) %>: <a target="_blank" href="<%= tracking_url_service(tracking_numbers[0]) %>"><%= tracking_numbers[0] %></a>
+	<% } else { %>
+		<div class="row-fluid item-container" data-type="accordion">
+			<div data-action="dropdown-expander">
+				<div>
+					<span class="btn-link-box touchable items-drop-down look-link">
+						<%= _('$(0) packages to track').translate(tracking_numbers.length) %>
+					</span>
+					<a href="#"><i class="<%= collapse_elements ? 'icon-chevron-down' : 'icon-chevron-down icon-chevron-up' %>"></i></a>
+				</div>
+			</div>
+			<div data-content="items-body" <%= collapse_elements ? 'style="display: none;"' : '' %>>
+				<ul>
+				<% _.each(tracking_numbers, function (number, index) { %>
+					<li>
+						<a target="_blank" class="btn-link-box" href="<%= tracking_url_service(number) %>"><%= number %></a>
+						<%= tracking_name_service(number) ? ('('+tracking_name_service(number)+')') : '' %>
+					</li>
+				<% }) %>
+				</ul>
+			</div>
+		</div>
+	<% } %>
+
+<% }) %>

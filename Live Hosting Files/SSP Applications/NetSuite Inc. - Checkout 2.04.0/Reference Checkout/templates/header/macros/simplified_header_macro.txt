@@ -1,0 +1,34 @@
+<% registerMacro('simplifiedHeader', function (view) { %>
+<%
+	var application = view.application
+	,	continue_url = '/' + (application.getConfig('siteSettings.sitetype') === 'ADVANCED' ? _(application.getConfig('defaultSearchUrl')).fixUrl() : '')
+	,	touchpoint = true;
+	if(SC.ENVIRONMENT.siteSettings.iswsdk && SC.ENVIRONMENT.siteSettings.wsdkcancelcarturl){
+		continue_url = SC.ENVIRONMENT.siteSettings.wsdkcancelcarturl;
+		touchpoint = false;
+	}
+%>
+<!-- Bar just for style -->
+<nav class="navbar navbar-inverse navbar-static-top site-header-top-nav">
+	<div class="navbar-inner">
+		<div class="container"></div>
+	</div>
+</nav>
+<!-- /Bar just for style -->
+<div class="container">
+	<div class="row-fluid site-branding">
+		<div class="span3 site-logo">
+			<%= SC.macros.siteLogo(view.application, true) %>
+		</div>
+		<div class="span6 header-banner">
+			<div id="banner-header-top" class="content-banner banner-header-top"></div>
+			&nbsp;
+		</div>
+		<div class="span3 back-to-shopping">
+			<a class="pull-right btn continue-shopping btn-primary" href="<%= continue_url %>" <%= touchpoint ? 'data-touchpoint="home"' : '' %> data-hashtag="#<%= continue_url %>">
+				<%= _('Continue Shopping').translate() %>
+			</a>
+		</div>
+	</div>
+</div>
+<% }) %>

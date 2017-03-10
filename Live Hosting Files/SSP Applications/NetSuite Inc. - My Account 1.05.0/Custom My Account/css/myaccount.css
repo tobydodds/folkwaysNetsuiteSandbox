@@ -1,0 +1,100 @@
+.visible-xs{display: none;}
+.hidden-xs{display: block;}
+@media (min-width: 767px) {
+	#main .site-menu { height: 30px; line-height: 30px; background-color: #bac4c9; }
+	#main .site-menu .row-fluid [class*="span"] { width:100% !important; height:30px !important; margin-left: 0px }
+	#main .site-menu li { border-right: 1px solid #FFF; margin: 0px; height: 30px; }
+	#main .site-menu li.cart { width:141px; margin:0; background:url(/c.297799/Checkout/img/nav-btn/nav-shopping-cart.gif) no-repeat }
+	#main .site-menu li.cart:hover { background-position:0 -30px }
+	#main .site-menu li.checkout { width:103px; margin:0; background:url(/c.297799/Checkout/img/nav-btn/nav-checkout.gif) no-repeat }
+	#main .site-menu li.checkout:hover { background-position:0 -30px }
+	#main .site-menu li.myaccount { width:121px; margin:0; background:url(/c.297799/Checkout/img/nav-btn/nav-my-account.gif) no-repeat }
+	#main .site-menu li.myaccount:hover { background-position:0 -30px }
+}
+
+@media (max-width: 640px) {
+	.visible-xs{display: block;}
+	.hidden-xs{display: none;}
+	#main .site-menu { height: 30px; line-height: 30px; background-color: #bac4c9; }
+	#main .site-menu .row-fluid [class*="span"] { width:100% !important; height:30px !important; margin-left: 0px} 
+	#main .site-menu li { margin: 0px; height: 30px; text-align: center; padding: 5px 0}
+	#main .site-menu li a { color:#ffffff; font-family: verdana; font-weight: bold; font-size: 12px}
+	#main .site-menu li.cart { width:40% !important; border-right: 1px solid #FFF; height:30px; margin:0;  }
+	#main .site-menu li.cart:hover { width:40% !important; border-right: 1px solid #FFF; background-color:#526c79 }
+	#main .site-menu li.checkout { width:28% !important; border-right: 1px solid #FFF; height:30px; margin:0; }
+	#main .site-menu li.checkout:hover { width:28% !important; border-right: 1px solid #FFF; background-color:#526c79 }
+	#main .site-menu li.myaccount { width:32% !important; height:30px; margin:0; }
+	#main .site-menu li.myaccount:hover { width:32% !important; background-color:#526c79 }
+	.checkout-content{margin:0 10px 40px 10px !important }
+	#footer-container { padding-top:8px }
+	#main .site-footer li { line-height:10px !important }
+	#site-footer { background: #bac4c9 !important; height: auto !important; line-height: 20px !important;}
+	#footer-container li { margin-bottom: 1.5em; }
+	.privacy { margin:-50px 0 15px 10px !important; line-height:14px}
+}
+
+.artist-name { font-family: Georgia,"Times New Roman",Times,serif;
+    font-weight: normal; color: #000000}
+
+.sku { font-size: 12px !important }
+
+.breadcrumb { display: none; }
+
+.shopping-cart {margin-bottom: 60px}
+
+#main h1 {font-family: Georgia;}
+#main h2 {font-family: Georgia;}
+#main h3 {font-family: Georgia;}
+#main .checkout-cart-summary { margin-bottom: 40px}
+
+#main .order-wizard-layout { margin-bottom: 30px;}
+
+#main .new-customer { padding-right: 140px; margin-bottom: 60px}
+
+#main select, #main textarea, #main input[type="text"], #main input[type="password"], #main input[type="datetime"], #main input[type="datetime-local"], #main input[type="date"], #main input[type="month"], #main input[type="time"], #main input[type="week"], #main input[type="number"], #main input[type="email"], #main input[type="url"], #main input[type="search"], #main input[type="tel"], #main input[type="color"], #main .uneditable-input { margin-bottom:0!important; }
+
+#main .site-footer { border: none !important; }
+#main .site-footer>.container { border: none !important; }
+
+#site-footer { background: #bac4c9; height: 30px; text-height: 30px; }
+
+#footer-container {
+	clear: both;
+	font: 12px georgia;
+	margin-left: auto!important;
+	margin-right: auto!important;
+	margin-top: 10px;
+}
+#footer-container ul {
+	color: #ffffff;
+	font-size: 12px;
+	list-style-type: none;
+	margin: 0 0 0 20px;
+	padding: 0 0 10px 0;
+}
+#footer-container li {
+	color: #ffffff;
+	display: inline;
+	margin-right: 5px;
+	float: left;
+}
+#footer-container a {
+	color: #ffffff;
+}
+#footer-container a:hover,
+#footer-container a:focus {
+	color: #ffffff;
+}
+.privacy { float:right; font-family: verdana; font-size:10px; color:#888888; margin:-30px 0 15px 10px}
+
+#internal-error { margin-bottom: 60px}
+
+#main .btn-link {
+    border-color: transparent;
+    border-radius: 0;
+    color: #526c79;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: verdana;
+    font-size: 10px;
+}

@@ -1,0 +1,6 @@
+<iframe src="<%- view.src %>" class="modalIFrame"></iframe>
+<script type="text/javascript">
+	if(navigator.userAgent.match(/iPhone/i)){
+		jQuery('.modalIFrame').attr('scrolling','no');
+	}
+</script>

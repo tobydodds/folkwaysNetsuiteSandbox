@@ -1,0 +1,96 @@
+<%
+	var SiteSettings
+	,	siteType
+	,	Environment
+	,	Language
+	,	Currency
+	,	Error;
+
+	try {
+		SiteSettings = Application.getModel('SiteSettings').get();
+		siteType = SiteSettings.sitetype;
+
+		Environment = Application.getEnvironment(session, request);
+		Language = Environment.currentLanguage && Environment.currentLanguage.locale || '';
+		Currency = Environment.currentCurrency && Environment.currentCurrency.code || '';
+
+		// Access control, if you are not loged this will send you to the log in page
+		if (!session.isLoggedIn() || session.getCustomer().isGuest())
+		{
+			var parameters = request.getAllParameters();
+
+			delete parameters.sitepath;
+			parameters.origin = 'customercenter';
+
+			if (parameters.fragment)
+			{
+				parameters.origin_hash = parameters.fragment;
+				delete parameters.fragment;
+			}
+
+			return nlapiSetRedirectURL('EXTERNAL', SiteSettings.touchpoints.login, null, false, parameters);
+		}
+	} catch (e) {
+		Error = Application.processError(e);
+	}
+%>
+<!DOCTYPE html>
+<html <%= Language ? 'lang="' + Language.replace('_', '-') + '"' : '' %>>
+<head>
+<link rel="shortcut icon" href="<%= session.getAbsoluteUrl("checkout", "img/favicon.ico") %>" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>My Account</title>
+<!--[if lt IE 9]>
+<script src="<%= session.getAbsoluteUrl('checkout', 'js/utils/html5shiv.js') %>"></script>
+<![endif]-->
+<% if (siteType && siteType === 'STANDARD') { %>
+<link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'skins/standard/styles-sitebuilder.css') %>">
+
+<% } %>
+<script>
+	var SC = window.SC = {
+		ENVIRONMENT: {
+			jsEnvironment: (typeof nsglobal === 'undefined') ? 'browser' : 'server'
+		}
+		, isCrossOrigin: function() { return '<%= Environment.currentHostString %>' !== document.location.hostname; }
+		, isPageGenerator: function() { return typeof nsglobal !== 'undefined'; }
+		, getSessionInfo: function(key)
+		{
+			var session = SC.SESSION || SC.DEFAULT_SESSION || {};
+			return (key) ? session[key] : session;
+		}
+	};
+</script>
+<script src="<%= session.getAbsoluteUrl('checkout', 'sc.environment.ssp?lang=' + Language + '&cur=' + Currency) %>"></script>
+<% if (Error) { %>
+<script>SC.ENVIRONMENT.contextError = <%= JSON.stringify(Error) %>;</script>
+<% } %>
+<script src="<%= session.getAbsoluteUrl('checkout', 'js/Application-01556f997c42.js') %>"></script>
+<script src="<%= session.getAbsoluteUrl('checkout', 'templates/Templates-01523d3d8de7.js') %>"></script>
+<link rel="stylesheet" href="https://system.netsuite.com/c.297799/SSP Applications/NetSuite Inc. - My Account 1.05.0/Custom My Account/css/myaccount.css">
+</head>
+<body>
+<% if (siteType && siteType === 'STANDARD'){ %>
+<div id='div__header' class='noprint' leftmargin='0' topmargin='0' marginwidth='1' >
+
+</div>
+<% } %>
+<noscript>
+<div class="alert alert-error alert-noscript">
+	<strong>Javascript is disabled on your browser.</strong><br>
+	To view this site, you must enable JavaScript or upgrade to a JavaScript-capable browser.
+</div>
+</noscript>
+
+<div id="main" class="main"></div>
+
+<% if (siteType && siteType === 'ADVANCED') { %>
+<link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'skins/standard/Styles-0146b0f70225.css') %>">
+<% } %>
+
+<% if (typeof(release_metadata) != 'undefined') { %>
+<!-- <%= JSON.stringify(release_metadata) %> -->
+<% } %>
+</body>
+</html>

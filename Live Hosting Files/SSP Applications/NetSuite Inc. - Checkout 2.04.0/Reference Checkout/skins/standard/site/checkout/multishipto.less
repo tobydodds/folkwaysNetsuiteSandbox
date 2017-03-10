@@ -1,0 +1,292 @@
+//*MISCELLANEOUS*/
+.btn-createshipment {
+	@media (max-width: @screen-small) {
+		width: 100%;
+	}
+}
+.items-remaining-list {
+	margin-bottom: 10px;
+}
+.multishipto-enable-link-container {
+	margin-top: 10px;
+}
+.section-sub-tile-header {
+	margin-bottom: 20px;
+}
+.grey-color {
+	color: @grayLight;
+}
+.orange-color {
+	color: @darkOrange;
+}
+.edit-address-link {
+	height: 40px;
+	cursor: pointer;
+	line-height: 40px;
+}
+/*SHIPPING PACKAGE*/
+.multishipto-package-reduced {
+	padding: 20px 40px 20px 5px;
+	@media (max-width: @screen-small) {
+		padding: inherit;
+	}
+}
+.multishipto-package {
+	border-bottom: @lightGray 1px solid;
+	margin-bottom: 10px;
+
+	.delivery-method-option {
+		height: 44px;
+	}
+
+	.delivery-method-label {
+		display: inline-block;
+		height: 44px;
+		line-height: 44px;
+		margin-left:10px;
+	}
+
+	.item-line-condensedview-style
+	{
+		margin-top: 25px;
+	}
+
+	/*Accordion Items container*/
+	.control-group {
+		margin-bottom: 40px;
+	}
+
+	.accordion-inner {
+		@media (max-width: @screen-small)
+		{
+			padding-left: inherit !important;
+			padding-right: inherit !important;
+		}
+	}
+
+	.edit-address-link {
+		display: block;
+		margin-bottom: 10px;
+		@media (max-width: @screen-small)
+		{
+			margin-bottom: 25px;
+		}
+	}
+
+	.item-line {
+		border-top: 1px solid #ddd;
+		margin-top: 10px;
+
+		.item-image {
+			float: left;
+			max-width: 68px;
+			display: inline-block;
+
+			@media (max-width: @screen-small) {
+				float: left;
+				width: 28%;
+				text-align: center;
+			}
+		}
+
+		.item-details {
+			@media (max-width: @screen-small) {
+				width: 60%;
+				float: right;
+			}
+		}
+
+		.button-actions {
+			@media (max-width: @screen-small) {
+				width: 60%;
+				float: right;
+			}
+		}
+
+		.item-property-container {
+			@media (max-width: @screen-small) {
+				width: 60%;
+				float: right;
+			}
+		}
+
+		.item-title {
+			float: left;
+			display: inline-block;
+			vertical-align: middle;
+		}
+
+		.item-amount {
+			margin: 10px 0 0 0;
+			float: right;
+			text-align: right;
+		}
+
+		.item-label,.option-label {
+			color: @grayLight;
+		}
+
+		.item-displayname {
+			font-weight: bold;
+		}
+	}
+
+	.error-message-no-shipping-address {
+		margin-top: 10px;
+	}
+
+	.accordion-group {
+		border: inherit !important;
+
+		.well-header {
+			padding: 5px !important;
+		}
+	}
+
+	button.block-button {
+		padding: 0px;
+		display: block;
+		clear:both;
+		float:right;
+	}
+
+	.item-count-container {
+		font-weight: bold;
+	}
+}
+
+/*ADDRESSES*/
+.new-address-title {
+	font-size: 1.4em;
+	padding: 6px
+}
+.address-error-message {
+	color: @addressError;
+	font-style: italic;
+}
+
+.multishipto-address-selector {
+	width: 100%;
+	height: 40px;
+	@media(max-width: @screen-small){
+		margin-bottom: 10px;
+	}
+}
+
+.multishipto-save-address-btn {
+	float: left !important;
+}
+
+/*DEFAULT ITEMS LIST*/
+.multishipto-table-row-header {
+	margin: 10px 0px;
+}
+
+.multishipto-item-table-row:last-child{
+	border-bottom: none;
+}
+
+/*Used in process of shipments creation */
+.multishipto-item-table-row {
+	border-bottom: @itemBorder 1px solid;
+	display: block;
+	padding: @baseLineHeight / 2 0;
+	position: relative;
+	transition: 0.2s;
+
+	.item-editable-quantity {
+		width: 36px;
+	}
+
+	.item-label,.option-label {
+		color: @grayLight;
+	}
+
+	.quantity-tail {
+		vertical-align: super;
+	}
+
+	.quantity-error {
+		border-color: red;
+	}
+
+	&:hover {
+		background-color: @itemHover;
+	}
+
+	&.active {
+		background-color: @itemActive;
+	}
+
+	.item-selector {
+		@media (max-width: @screen-small) {
+			float: left;
+			width: auto;
+		}
+	}
+
+	.item-image {
+		@media (max-width: @screen-small) {
+			float: left;
+			width: 28%;
+			text-align: center;
+		}
+	}
+
+	.item-image-control {
+		max-width: 50px;
+		width: 100%;
+		margin: auto;
+	}
+
+	.item-quantity {
+		@media (max-width: @screen-small) {
+			width: 60%;
+			float: right;
+		}
+	}
+
+	.item-unitprice {
+		color: @darkOrange;
+		@media (max-width: @screen-small) {
+			width: 60%;
+			float: right;
+		}
+	}
+
+	.item-totalprice {
+		text-align: center;
+		@media (max-width: @screen-small) {
+			width: 60%;
+			float: right;
+			text-align: left;
+		}
+	}
+
+	.item-description {
+		@media (max-width: @screen-small) {
+			width: 60%;
+			float: right;
+		}
+	}
+
+	.editable-quantity-label {
+		display: none !important;
+		color: @grayLight;
+
+		@media (max-width: @screen-small) {
+			display: block !important;
+		}
+	}
+}
+
+/*NONSHIPPABLE ITEMS POPUP*/
+.nonshippable-items {
+	.buttons-container {
+		padding: 10px;
+	}
+}
+
+.non-shippable-items-subtitle {
+	margin-bottom: 25px;
+}

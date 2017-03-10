@@ -1,0 +1,61 @@
+<% registerMacro('itemDetailsLine', function (options) { %>
+
+	<%
+	var application = options.application
+	,	lines = options.lines
+	,	lines_length = lines.length
+	,	well_header = options.wellHeader
+	,	extra_data = options.extra_data
+	,	columns = options.columns || []
+	,	columns_body = options.columnsBody || []
+	,	atributes = options.atributes
+	,	comment = options.comment || null
+	,	collapse_elements = options.collapse_elements;
+	%>
+
+	<div class="row-fluid control-group item-container" data-type="accordion">
+		<div class="well" data-action="items-expander">
+			<div class="well-header">
+				<span class="items-drop-down"><%= well_header %></span>
+				<a href="#" class="pull-right"><i class="icon-plus  <%= collapse_elements ? 'items-maximize' : 'icon-minus items-minimize' %>"></i></a>
+			</div>
+		</div>
+		<div data-content="items-body" <%= collapse_elements ? 'style="display: none;"' : '' %>>
+			<div class="row-fluid nav-tabs nav-tabs-heading hidden-phone">
+				<% _.each(columns, function(row) { %>
+					<%= row.addStart %>
+						<div class="<%= row.className %>"><%= row.content %></div>
+					<%= row.addEnd %>
+				<% }) %>
+			</div>
+
+			<% lines.each(function (line, index) { %>
+				<div class="row-fluid nav-tabs cart-item" data-item="<%= line.get('internalid') || line.get('item_id') %>">
+					<% _.each(columns_body, function(row) { %>
+						<%= row.addStart %>
+							<div class="<%= row.className %>">
+								<%= _.isFunction(row.content) ? row.content(line) : row.content %>
+							</div>
+						<%= row.addEnd %>
+					<% }) %>
+				</div>
+			<% }) %>
+
+			<% if (extra_data) { %>
+			<div class="row-fluid">
+				<div class="offset5 span4 text-right popover-content strong hidden-phone"><%= extra_data.label_subtotal_formatted %></div>
+				<div class="span3 text-right popover-content strong"><span class="visible-phone"><%= _('Items Subtotal').translate() %>: </span> <span class="item-subtotal"><%= extra_data.subtotal_formatted %></span></div>
+			</div>
+			<% } %>
+
+			<% if (comment) { %>
+			<div class="row-fluid">
+				<div class="span8 margin-top-20">
+					<p><%= _('Comments:').translate() %></p>
+					<blockquote><%- comment %></blockquote>
+				</div>
+			</div>
+			<% } %>
+		</div>
+	</div>
+<% }) %>

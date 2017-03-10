@@ -1,0 +1,37 @@
+<% if (view.application.getConfig('siteSettings.sitetype') === 'ADVANCED') { %>
+<header id="site-header" class="site-header">
+	<%= header(view) %>
+</header>
+<% } %>
+<div class="container main-container">
+	<div id="breadcrumb">
+		<%= breadcrumb() %>
+	</div>
+	<div class="layout-error-placeholder"></div>
+	<div class="row-fluid">
+		<nav id="side-nav" class="span3">
+			<h2><%= _('My Account').translate() %></h2>
+			<hr>
+			<ul id="sidebar" class="nav nav-tabs nav-stacked">
+			<% _.each(view.application.getLayout().getMenuItems(), function (item, index) { %>
+				<% if (item.children) { %> 
+				<%= tree(item, tree, 0, true) %>
+				<% } else { %>
+				<li data-label="<%= item.id %>" data-permissions="<%= item.permission %>">
+					<a href="/<%= item.url %>"  target="<%= item.target %>">
+						<%= item.name %>
+					</a>
+				</li>
+				<% } %>
+			<% }) %>
+			</ul>
+			<div data-type="product-list-menu"></div>
+		</nav>
+		<div id="content" data-type="product-list-details" class="span9"></div>
+	</div>
+</div>
+<% if (view.application.getConfig('siteSettings.sitetype') === 'ADVANCED') { %>
+<footer id="site-footer" class="site-footer">
+	<%= footer(view) %>
+</footer>
+<% } %>

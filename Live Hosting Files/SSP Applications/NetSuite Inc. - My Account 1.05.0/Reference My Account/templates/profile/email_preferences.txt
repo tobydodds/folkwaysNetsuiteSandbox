@@ -1,0 +1,45 @@
+<% var subscriptions = view.model.get('campaignsubscriptions') || []; %>
+<section>
+	<h3 class="no-margin-top"><%= view.page_header %></h3>
+	<a href="/" class="back-btn"><%= _('&lt; Back to Account').translate() %></a>
+	<hr class="divider-small">
+	<div data-type="alert-placeholder"></div>
+	<form>
+		<fieldset>
+			<legend class="no-margin-bottom">
+				<%= _('Newsletter').translate() %>
+			</legend>
+			<div class="control-group">
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" id="emailsubscribe" value="T" data-unchecked-value="F" name="emailsubscribe" <%= view.model.get('emailsubscribe') == 'T' ? 'checked' : '' %>>
+						<%= _('Yes, I would like to sign up for your Newsletter.').translate() %>
+					</label>
+				</div>
+			</div>
+		</fieldset>
+		<% if ( view.options.application.getConfig('siteSettings.campaignsubscriptions') && subscriptions.length ) { %>
+		<hr class="divider-small">
+		<fieldset>
+			<legend class="no-margin-bottom">
+				<%= _('Subscriptions').translate() %>
+			</legend>
+			<% _.each(subscriptions, function (subscription, index) { %>
+				<% var internalid = subscription.internalid; %>
+				<div class="control-group">
+					<div class="controls">
+						<label class="checkbox">
+							<input type="checkbox" id="subscription-<%= internalid %>" class="subscription" value="T" data-unchecked-value="F" name="subscription-<%= internalid %>" <%= view.model.get('emailsubscribe') == 'T' ? '' : 'disabled' %> <%= subscription.subscribed ? 'checked' : '' %>>
+							<%= _( subscription.name ).translate() %>
+						</label>
+					</div>
+				</div>
+			<% }) %>
+		</fieldset>
+		<% } %>
+		<div class="form-actions">
+			<button type="submit" class="btn btn-primary"><%= _('Update').translate() %></button>
+			<button type="reset"  class="btn btn-link hide" data-action="reset"><%= _('Cancel').translate() %></button>
+		</div>
+	</form>
+</section>

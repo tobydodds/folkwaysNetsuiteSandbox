@@ -1,0 +1,11 @@
+<% registerMacro('trackingNumbers', function (view, trackingnumbers) { %>
+<ul class="tracking-numbers">
+<% _.each(trackingnumbers, function (trackingnumber) { %>
+	<li class="tracking-number">
+		<a target="_blank" href="<%= view.getTrackingServiceUrl(trackingnumber) %>">
+			<%= trackingnumber %>
+		</a>
+	</li>
+<% }) %>
+</ul>
+<% }) %>

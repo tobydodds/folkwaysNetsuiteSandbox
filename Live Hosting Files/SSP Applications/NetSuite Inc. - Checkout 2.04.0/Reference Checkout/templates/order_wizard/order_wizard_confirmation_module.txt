@@ -1,0 +1,27 @@
+<%
+	var continueURL = '/'
+	,	touchpoint = true;
+	if(SC.ENVIRONMENT.siteSettings.iswsdk && SC.ENVIRONMENT.siteSettings.wsdkcancelcarturl){
+		continueURL = SC.ENVIRONMENT.siteSettings.wsdkcancelcarturl;
+		touchpoint = false;
+	}
+%>
+<div class="alert alert-block alert-success fade in thanks-panel-info">
+	<h3 class="alert-heading"><%= _('Thank you for shopping with us!').translate() %></h3>
+		<p><%= _('Your order number is').translate(view.confirmationNumber) %>
+		<big><strong>
+		<% if(view.wizard.application.getUser().get('isGuest') === 'F' && SC.ENVIRONMENT.siteSettings.touchpoints.customercenter){ %>
+			<a class="view-order-details" href="#" data-touchpoint="customercenter" data-hashtag="#/ordershistory/view/<%= view.orderId %>"><%= view.confirmationNumber %></a>.
+		<% } else { %>
+			<%= view.confirmationNumber %>
+		<% } %>
+		</strong></big>
+	</p>
+	<p><%= _('We received your order and will process it right away.').translate() %></p>
+	<% if (view.options.additional_confirmation_message) { %>
+		<p class="additional_confirmation_message"><%= view.options.additional_confirmation_message %></p>
+	<% } %>
+	<p class="confirmation-button-container">
+		<a class="btn btn-secondary" href="<%= continueURL %>" <%= touchpoint ? 'data-touchpoint="home"' : '' %> data-hashtag="#/"><%= _('Continue shopping').translate() %></a>
+	</p>
+</div>

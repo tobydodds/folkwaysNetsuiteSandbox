@@ -1,0 +1,77 @@
+<%
+	var model = view.model
+	,	lines = model.get('lines')
+	,	application = view.application
+	,	collapse_elements = application.getConfig('collapseElements');
+%>
+<div class="content return-authorization-confirmation-view">
+	<h3><%= view.page_title %></h3>
+	<a href="/returns" class="back-btn">
+		<%= _('&lt; Back to Returns').translate() %>
+	</a>
+	<hr>
+
+	<h4 style="margin-bottom: 18px;"><%= view.page_header %></h4>
+
+	<div class="alert alert-success">
+		<div class="row-fluid display-flex">
+			<div class="span1 payment-confirmation-tick-container hidden-phone text-right">✓</div>
+			<div class="span11">
+				<h2 class="payment-confirmation-greeting-container"><%= _('Thank you!').translate() %></h2>
+				<p><a href="/returns/<%= model.get('internalid') %>" class="text-strong"><%= _('Return request #$(0)').translate(model.get('tranid')) %></a></p>
+				<p class="return-confirmation-body-container">
+					<%= _('Your request was successfully submitted and a representative will contact you briefly.').translate() %> <br>
+					<%= _('An email was sent to you with a copy of this request.').translate() %>
+				</p>
+				<a href="/returns" class="btn"><%= _('Go to list of requests').translate() %></a>
+			</div>
+		</div>
+	</div>
+
+	<span class="return-authorization-details-amount lead pull-right"><%= model.get('summary').total_formatted %></span>
+	<p class="clearfix"><span class="text-light"><%= _('From:').translate() %></span> <%= _('$(0) #$(1)').translate(view.getCreatedFromLabel(), model.get('tranid')) %></p>
+
+	<div class="control-group" data-type="accordion">
+		<div class="well" data-action="items-expander">
+			<div class="well-header">
+				<%= _('Items ($(0))').translate(lines.length) %>
+				<a href="#" class="pull-right"><i class="icon-plus <%= collapse_elements ? '' : 'icon-minus' %>"></i></a>
+			</div>
+		</div>
+		<div data-content="items-body" style="<%= collapse_elements ? 'display: none;' : '' %>">
+
+			<div class="row-fluid nav-tabs hide-phone">
+				<div class="span4 offset1 popover-content popover-heading"><%= _('Item').translate() %></div>
+				<div class="span2 popover-content popover-heading"><%= _('Qty to return').translate() %></div>
+				<div class="span2 popover-content popover-heading"><%= _('Amount').translate() %></div>
+				<div class="span3 popover-content popover-heading responsive-align"><%= _('Reason for Return').translate() %></div>
+			</div>
+			<%	lines.each(function (line, index) { %>
+				<%
+					var item = line.get('item')
+					,	options = line.get('options');
+				%>
+				<div class="row-fluid nav-tabs item-<%= item.get('internalid') %>">
+					<div class="span1 item-image hide-phone"><img src="<%= application.resizeImage(item.get('_thumbnail').url, 'tinythumb') %>" alt="<%= item.get('_thumbnail').altimagetext %>"></div>
+					<div class="span4 popover-content">
+						<p class="item-displayname"><%= item.get('_name') %></p>
+						<p class="product-price text-highlight"><%= line.get('rate_formatted') %></p>
+						<p class="text-light"><%= _('SKU: #$(0)').translate(item.get('_sku')) %></p>
+						<% if (options && options.length) { %>
+							<div class="text-light"><%= SC.macros.showItemOptions(options) %></div>
+						<% } %>
+					</div>
+					<div class="span2 popover-content item-quantity"><span class="show-phone"><%= _('Qty:').translate() %></span> <b><%= line.get('quantity') %></b></div>
+					<div class="span2 popover-content item-totalprice"><span class="show-phone"><%= _('Amount:').translate() %></span> <%= line.get('amount_formatted') %></div>
+					<div class="span3 popover-content responsive-align"><%= line.get('reason') %></div>
+				</div>
+			<% }) %>
+		</div>
+	</div>
+
+	<% if (model.get('comment')) { %>
+	<br>
+	<p><%= _('Comments:').translate() %></p>
+	<blockquote><%= model.get('comment') %></blockquote>
+	<% } %>
+</div>

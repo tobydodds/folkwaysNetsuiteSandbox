@@ -1,0 +1,67 @@
+<div data-action="skip-login-message" class="guest-message"></div>
+
+<% if (view.getName()) { %>
+	<header class="page-header step-header">
+		<h2 data-type="wizard-step-name-container" ><%= view.getName() %></h2>
+	</header>
+<% } %>
+
+<div data-type="alert-placeholder-step"></div>
+
+<% if (!view.hideContinueButton) { %>
+<div class="step-navigation-buttons-top form-actions form-actions-top">
+	<button class="btn btn-primary btn-large btn-block btn-continue" data-action="submit-step">
+		<%= view.continueButtonLabel %>
+	</button>
+</div>
+<% } %>
+
+<div class="row-fluid">
+	<div id="wizard-step-review-left" class="wizard-step-content span8"></div>
+	<div id="wizard-step-review-right" class="wizard-step-content span4"></div>
+</div>
+<div class="row-fluid">
+	<div class="span8">
+		<div id="wizard-step-content" class="wizard-step-content row-fluid"></div>
+
+		<div class="step-navigation-buttons form-actions hide-phone hidden-tablet">
+			<% if (!view.hideContinueButton) { %>
+				<button class="btn btn-primary btn-large pull-right btn-continue<%=(view.hideSecondContinueButtonOnPhone)? ' hidden-phone': ''%>" data-action="submit-step">
+					<%= view.continueButtonLabel %>
+				</button>
+			<% } %>
+			<button class="btn btn-large pull-right btn-back" <%= !view.hideBackButton ? '' : 'style="display:none;"' %> data-action="previous-step">
+				<%= _('Back').translate() %>
+			</button>
+		</div>
+
+		<% if (view.bottomMessage) { %>
+			<br>
+			<p class="help-block stepgroup-bottom-message hide-phone <%= view.bottomMessageClass %>">
+				<%= view.bottomMessage %>
+			</p>
+		<% } %>
+
+	</div>
+	<div id="wizard-step-content-right" class="span4"></div>
+</div>
+
+<div class="row-fluid visible-phone visible-tablet">
+	<div class="step-navigation-buttons form-actions">
+		<% if (!view.hideContinueButton) { %>
+			<button class="btn btn-primary btn-large pull-right btn-continue<%=(view.hideSecondContinueButtonOnPhone)? ' hidden-phone': ''%>" data-action="submit-step">
+				<%= view.continueButtonLabel %>
+			</button>
+		<% } %>
+		<button class="btn btn-large pull-right btn-back" <%= !view.hideBackButton ? '' : 'style="display:none;"' %> data-action="previous-step">
+			<%= _('Back').translate() %>
+		</button>
+	</div>
+
+	<% if (view.bottomMessage) { %>
+		<br>
+		<p class="help-block stepgroup-bottom-message <%= view.bottomMessageClass %>">
+			<%= view.bottomMessage %>
+		</p>
+	<% } %>
+</div>

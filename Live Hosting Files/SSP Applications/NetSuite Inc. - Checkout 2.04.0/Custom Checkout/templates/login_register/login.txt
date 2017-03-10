@@ -1,0 +1,36 @@
+<h3><%= _('Returning customer').translate() %></h3>
+<p style="font-family: Verdana, Geneva, sans-serif;"><%= _('Sign in below to checkout with an existing account:').translate() %></p>
+
+<div data-type="alert-placeholder"></div>
+
+<form class="login-form">
+	<fieldset>
+		<div class="control-group">
+			<label style="font-family: Verdana, Geneva, sans-serif;" class="control-label" for="login-email">
+				<%= _('<strong>Email Address</strong> <small>(required)</small>').translate() %>
+			</label>
+			<div class="controls">
+				<input autofocus type="email" name="email" id="login-email" class="input-xlarge" placeholder="<%- _('your@email.com').translate() %>">
+			</div>
+		</div>
+
+		<div class="control-group">
+			<label style="font-family: Verdana, Geneva, sans-serif;" class="control-label" for="login-password">
+				<%= _('<strong>Password</strong> <small>(required)</small>').translate() %>
+			</label>
+			<div class="controls">
+				<input type="password" name="password" id="login-password" class="input-xlarge">
+			</div>
+		</div>
+
+		<div class="form-actions sign-in-actions">
+			<button type="submit" class="btn btn-primary btn-large">
+				<%= _('Sign In').translate() %>
+			</button>
+
+			<a class="btn btn-link" data-type="forgot-password" href="/forgot-password">
+				<%=_('Forgot password?').translate()%>
+			</a>
+		</div>
+	</fieldset>
+</form>

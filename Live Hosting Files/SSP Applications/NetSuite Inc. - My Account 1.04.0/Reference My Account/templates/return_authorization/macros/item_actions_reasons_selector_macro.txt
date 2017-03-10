@@ -1,0 +1,30 @@
+<% registerMacro('itemActionsReasonsSelector', function (options) { %>
+	<%
+		var is_active = options.isActive
+		,	reasons = options.reasons
+		,	selected_reason = options.selectedReason
+		,	text_reason = options.textReason;
+	%>
+	<% if (is_active) { %>
+		<label class="text-light contol-label" for="reason">
+			<%= _('Reason for return').translate() %> <small><%= _('(required)').translate() %></small>
+		</label>
+		<% if (reasons.length) { %>
+			<select name="reason" id="reason" class="" data-toggle="false">
+				<option value=""><%= _('Select a reason').translate() %></option>
+				<% _.each(reasons, function (reason) { %>
+					<option value="<%- reason %>" <%= reason === selected_reason ? 'selected' : '' %>><%- reason %></option>
+				<% }) %>
+				<option value="other" <%= selected_reason === 'other' ? 'selected' : '' %>><%= _('Other').translate() %></option>
+			</select>
+
+			<% if (selected_reason === 'other') { %>
+				<input type="text" name="reason-text" id="" value="<%= text_reason %>" data-toggle="false">
+			<% } %>
+			<br>
+			<a href="#" class="" data-action="apply-reason" data-toggle="false"><%= _('Apply to all').translate() %></a>
+		<% } else { %>
+			<input type="text" name="reason-text" id="" value="<%= text_reason %>" data-toggle="false">
+		<% } %>
+	<% } %>
+<% }) %>

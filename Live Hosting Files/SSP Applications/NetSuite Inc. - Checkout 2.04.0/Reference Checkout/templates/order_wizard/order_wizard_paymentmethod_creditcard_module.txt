@@ -1,0 +1,78 @@
+<% var view_credit_card = view.creditcard %>
+
+<h3 class="section-header">
+	<%= _('Payment information').translate() %>
+</h3>
+
+<% if (view.getTitle()) { %>
+	<h4>
+		<%= view.getTitle() %>
+	</h4>
+<% } %>
+
+<% if (view_credit_card && !view_credit_card.isNew()) { %>
+<div class="credit-card-selected">
+	<%= creditcard(view_credit_card, {
+		showSecurityCodeForm: view.requireccsecuritycode
+	,	securityNumberError: view.isSecurityNumberInvalid && view.securityNumberErrorMessage
+	,	icons: view.wizard.application.getConfig('creditCardIcons')
+	,	ccsecuritycode: view.ccsecuritycode
+	,	showCreditCardHelp: view.wizard.application.getConfig('showCreditCardHelp')
+	,	creditCardHelpTitle: view.wizard.application.getConfig('creditCardHelpTitle')
+	,	imageCvvAllCards: view.wizard.application.getConfig('imageCvvAllCards')
+	,	imageCvvAmericanCard: view.wizard.application.getConfig('imageCvvAmericanCard')
+	,	collapseElements: view.wizard.application.getConfig('collapseElements')
+	,	availableCreditcards: view.getAvailableCreditcards()
+	}) %>
+	<div class="actions">
+		<a class="btn btn-link" href="/creditcards/<%= view_credit_card.get('internalid') %>" data-toggle="show-in-modal">
+			<%= _('Edit Card').translate() %>
+		</a>
+		| 
+		<a href="#" class="btn btn-link" data-action="change-creditcard">
+			<%= _('Change Card').translate() %>
+		</a>
+	</div>
+</div>
+<% } %>
+
+<% if (view.creditcards.length >= 1 && !view_credit_card) { %>
+	<div id="creditcard-module-list-placeholder" class="creditcard-module-list-placeholder">
+		<p>
+			<a class="btn btn-link add-new-credit-card" href="/creditcards/new" data-toggle="show-in-modal">
+				<%= _('Add New Credit Card').translate() %>
+			</a>
+		</p>
+		<%
+			var creditcardWrap = function (creditcard) {
+				return SC.macros.creditcard(creditcard, {
+					showSelect: true
+				,	showActions: true
+				,	showDefaults: view.showDefaults
+				,	selectMessage: view.selectMessage
+				,	icons: view.wizard.application.getConfig('creditCardIcons')
+				});
+			} 
+		%>
+		<%= displayInRows(view.creditcards.models, creditcardWrap, view.itemsPerRow || 2) %>
+	</div>
+<% } else if (view.creditcards.length === 0) { %>
+	<div id="creditcard-module-form-placeholder">
+		<form method="POST">
+			<% var date = new Date(); %>
+			<%= creditcardForm(view_credit_card, {
+				application: view.wizard.application
+			,	months: _.range(1, 13)
+			,	years: _.range(date.getFullYear(), date.getFullYear() + 25)
+			,   currentMonth: date.getMonth() + 1
+			,	showDefaults: view.showDefaults
+			,	showSecurityCodeForm: view.requireccsecuritycode
+			,	showCreditCardHelp: view.wizard.application.getConfig('showCreditCardHelp')
+			,	creditCardHelpTitle: view.wizard.application.getConfig('creditCardHelpTitle')
+			,	imageCvvAllCards: view.wizard.application.getConfig('imageCvvAllCards')
+			,	imageCvvAmericanCard: view.wizard.application.getConfig('imageCvvAmericanCard')
+			,	availableCreditcards: view.getAvailableCreditcards()
+			}) %>
+		</form>
+	</div>
+<% } %>

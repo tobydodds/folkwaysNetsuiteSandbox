@@ -1,0 +1,63 @@
+<h3 class="no-margin-top"><%= view.page_header %></h3>
+<a href="/" class="back-btn"><%= _('&lt; Back to Account').translate() %></a>
+<hr class="divider-small">
+<% view.model = view.model || { get: function () { return ''; } } %>
+<div data-type="alert-placeholder"></div>
+<section class="row-fluid">
+	<div class="span12">
+		<form class="contact_info">
+			<fieldset>
+				<% if ( view.model.get('type') !== 'COMPANY' ) { %>
+					<div class="control-group">
+						<label class="control-label" for="firstname"><%= _('First Name').translate() %></label>
+						<div class="controls">
+							<input type="text" class="input-large" id="firstname" name="firstname" value="<%- view.model.get('firstname') || '' %>">
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label" for="lastname"><%= _('Last Name').translate() %></label>
+						<div class="controls">
+							<input type="text" class="input-large" id="lastname" name="lastname" value="<%- view.model.get('lastname') || '' %>">
+						</div>
+					</div>
+				<% } %>
+
+				<% if ( view.model.get('type') === 'COMPANY' || view.options.application.getConfig('siteSettings.registration.showcompanyfield') === 'T' ) { %>
+					<div class="control-group">
+						<label class="control-label" for="companyname"><%= _('Company Name').translate() %></label>
+						<div class="controls">
+							<input type="text" class="input-large" id="companyname" name="companyname" value="<%- view.model.get('companyname') || '' %>">
+						</div>
+					</div>
+				<% } %>
+
+				<div class="control-group">
+					<label class="control-label" for="phone">
+						<% var phone_format = view.options.application.getConfig('siteSettings.phoneformat') %>
+						<% if ( phone_format ) { %>
+							<%= _('Phone Number (ex/$(0))').translate( phone_format ) %>
+						<% } else { %>
+							<%= _('Phone Number').translate() %>
+						<% } %>
+					</label>
+					<div class="controls">
+						<input type="tel" class="input-large" id="phone" name="phone" data-type="phone" value="<%- view.model.get('phone') || '' %>">
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label" for="email"><%= _('Email').translate() %></label>
+					<div class="controls">
+						<p class="input-large no-copy-paste" id="email" name="email" ><%- view.model.get('email') || '' %></p>
+					</div>
+				</div>
+
+			</fieldset>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary"><%= _('Update').translate() %></button>
+				<button type="reset" class="btn hide" data-action="reset"><%= _('Cancel').translate() %></button>
+			</div>
+		</form>
+	</div>
+</section>

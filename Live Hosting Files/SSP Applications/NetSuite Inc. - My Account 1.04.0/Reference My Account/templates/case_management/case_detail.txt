@@ -1,0 +1,102 @@
+<%
+var categories = view.fields.get('categories')
+,	user = view.user
+,	model = view.model
+,	subject = model.get('title')
+,	grouped_messages = model.get('grouped_messages')
+,	messages_count = model.get('messages_count')
+,   collapse_elements = view.application.getConfig('collapseElements')
+,	close_status_id = SC.ENVIRONMENT.CASES.CONFIG.default_values.status_close.id;
+%>
+
+<section class="content caseDetail">
+	<header>
+		<h3>
+			<span class="field-number"><%= view.page_header %></span>
+			<span class="field-subject text-light"><%- subject %></span>
+		</h3>
+		<a href="/cases" class="back-btn"><%= _('&lt; Back to Cases').translate() %></a>		
+	</header>	
+	
+	<hr class="divider-small" />
+	
+	<div data-confirm-message class="confirm-message"></div>
+
+	<div data-type="alert-placeholder"></div>
+
+	<div class="case-detail-header">		
+		<div class="row-fluid">
+			<div class="span12">
+				<span><%= _('Type of inquiry:').translate() %></span>
+				<span class="field-type"><%= model.get('category').name %></span>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<span><%= _('Creation date:').translate() %></span>
+			<span class="field-creation-date"><%= model.get('createdDate') %></span>
+		</div>
+		<div class="row-fluid">
+			<div class="span6">
+				<span><%= _('Last message:').translate() %></span>
+				<span class="field-last-message-date"><%= model.get('lastMessageDate') %></span>
+			</div>
+			<div class="span6 hidden-phone">
+				<div class="pull-right">
+					<span><%= _('Status:').translate() %></span>
+					<span class="field-status status"><%= model.get('status').name %></span>
+				</div>
+			</div>
+		</div>
+		<div class="row-fluid visible-phone">
+			<span><%= _('Status:').translate() %></span>
+			<span class="field-status status"><%= model.get('status').name %></span>
+		</div>		
+		<% if (model.get('status').id !== close_status_id) { %>
+			<div class="row-fluid case-detail-reply-section">
+				<button type="button" class="btn-close-case btn btn-expanded pull-right" data-action="close-case"><%= _('Close Case').translate() %></button>
+			</div>
+		<% } %>
+	</div>
+	<hr class="divider-small" />	
+	<form action="#">
+		<div class="control-group case-detail-add-reply row-fluid">
+			<div class="row-fluid">
+				<label for="reply"><%= _('Reply with a message').translate() %>: </label>
+				<textarea name="reply" id="reply" class="form-control user-input-reply input-xxlarge" rows="4"></textarea>
+			</div>
+			<div class="row-fluid case-detail-reply-section">
+				<button type="submit" class="btn-reply btn btn-primary btn-expanded"><%= _('Reply').translate() %></button>
+			</div>
+		</div>
+	</form>
+	<div class="case-detail-messages" data-type="accordion">
+        <div class="well" data-action="items-expander">
+            <div class="well-header">
+                <span class="data-messages-count"><%= _('Messages ($(0))').translate(messages_count) %></span>
+				<a href="#" class="pull-right"><i class="icon-plus  <%= collapse_elements ? 'items-maximize' : 'icon-minus items-minimize' %>"></i></a>
+            </div>
+        </div>
+        <div class="well-section-bordered" data-content="items-body" <%= collapse_elements ? 'style="display: none;"' : '' %>>
+        	<% _.each(grouped_messages, function (message_group) { %>
+        		<div class="case-detail-message-group-row">
+        			<div class="case-detail-message-date-section">
+						<span class="field-message-date text-light text-line-after"><%= message_group.date %></span>
+					</div>
+					<% _.each(message_group.messages, function (message) { %>
+						<div class="case-detail-message-row <%= message.initialMessage ? 'highlighted' : '' %>">
+							<div>
+								<span class="field-message-author text-strong"><%= message.author %></span>
+								<span class="field-message-time text-light"><%= '(' + message.messageDate + ')' %></span>
+								<% if (message.initialMessage) { %>
+									<span class="text-light"><%= _('- Original case message').translate() %></span>
+								<% } %>
+							</div>
+							<pre class="field-message"><%- message.text %></pre>
+						</div>
+					<% }); %>
+				</div>
+			<% }); %>
+		</div>
+	</div>
+	<br />	
+</section>

@@ -1,0 +1,29 @@
+<% registerMacro('itemDetailsLineProduct', function (options) {
+
+	var item = options.item
+	,	name = SC.macros.itemLinkName({item: item, showLinkeable: true, hideLink: options.hideLink});
+	%>
+
+	<div>
+		<span class="item-name"><%= name %></span>
+	</div>
+	<div>
+		<% if (item.type === 'Discount') { %>
+			<%= _('Discount').translate() %>
+		<% } else { %>
+			<%= _('<span class="text-light">SKU</span>: <span class="item-sku">#$(0)</span>').translate(item.get('_sku')) %>
+		<% } %>
+	</div>
+
+	<%= item.renderAllOptionSelected() %>
+
+	<% if (!_.isBoolean(item.get('_isPurchasable')) && item.get('_itemType') !== 'Discount') {  %>
+		<div>
+			<p class="alert alert-warning"><%= _('This item is no longer available').translate() %></p>
+		</div>
+	<% } else if (!item.get('_isInStock') && item.get('_showOutOfStockMessage')) { %>
+		<div>
+			<span class="text-light"><%= SC.macros.itemDetailsStock(item.getStockInfo()) %></span>
+		</div>
+	<% } %>
+<% }) %>

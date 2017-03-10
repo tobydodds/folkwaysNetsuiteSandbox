@@ -1,0 +1,52 @@
+{
+	"predef": [
+		"SC"
+	,	"jQuery"
+	,	"$"  
+	,	"_"
+	,	"Backbone"
+	,	"require"
+	,	"console"
+	,	"define"
+	,	"confirm"
+	,	"unescape"
+	,	"_gat"
+	,	"_gaq"
+	,	"ga"
+	,	"it"
+	,	"describe"
+	,	"MockData"
+	,	"TestCasesData"
+	,	"expect"
+	,	"beforeEach"
+	,	"spyOn"
+	,	"jasmine"
+	,	"xit"
+	,	"xdescribe"
+	,	"waitsFor"
+	,	"runs"
+	,	"afterEach"
+	,	"specs"
+	,	"waits"
+	]
+
+,	"forin":true
+,	"noarg":true
+,	"noempty":true
+,	"eqeqeq":true
+,	"bitwise":false
+,	"strict":true
+,	"undef":true
+,	"unused":true
+,	"curly":true
+,	"browser":true
+,	"quotmark":"single"
+,	"maxerr":50
+,	"laxcomma":true
+,	"expr":true
+,	"newcap": false
+,	"-W020": true
+,	"-W079": true
+,	"evil":true
+}
+

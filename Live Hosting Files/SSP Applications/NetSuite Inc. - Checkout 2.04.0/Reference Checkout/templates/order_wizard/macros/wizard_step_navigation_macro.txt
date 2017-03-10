@@ -1,0 +1,48 @@
+<% registerMacro('wizadStepNavigation', function (step_groups) { %>
+<ul class="wizard-step-groups">
+<% var index_counter = 0
+	,	errors_to_display = []; %>
+<% _.each(step_groups, function (step_group) { %>
+	<%
+	if (step_group.showStepGroup())
+	{
+		var list_item_class = 'wizard-step-link';
+		if (step_group.state === 'present')
+		{
+			list_item_class += ' active';
+		}
+		else if (step_group.state === 'future')
+		{
+			list_item_class += ' disabled';
+		}
+
+		var step_group_errors = step_group.getErrors();
+		if (step_group_errors && step_group_errors.length)
+		{
+			list_item_class += ' error';
+		}
+
+		errors_to_display = _.uniq(_.union(errors_to_display, step_group_errors), function (item) { return item.errorCode; });
+	%>
+
+	<% if (index_counter) { %>
+		<li class="divider divider-<%= index_counter %>">/</li>
+	<% } %>
+
+	<li class="<%- list_item_class %> wizard-step-<%= index_counter %>">
+		<a href="<%- step_group.state === 'future' ? Backbone.history.fragment : step_group.url + '?force=true' %>">
+			<span class="step-index step-index-<%= index_counter %>">
+				<%= ++index_counter %>
+			</span>
+			<%= step_group.name %>
+		</a>
+	</li>
+	<% } %>
+<% }) %>
+</ul>
+<% if (errors_to_display.length) { %>
+	 <% _.each(errors_to_display, function (error) { %>
+	 		<div class="alert alert-error orderwizard-header-error"><%= error.errorMessage %></div>
+	<% }) %>
+<% } %>
+<% }) %>

@@ -1,0 +1,85 @@
+<section>
+<% if ( view.customerSupportURL ) { %>
+	<div class="header-links">
+		<%= _('Need Help? Contact <a href="$(0)">Customer Service</a>').translate( view.customerSupportURL ) %>
+	</div>
+<% } %>
+	<div class="row">
+		<div class="span3">
+			<div class="well">
+				<h3><%= _('Profile').translate() %></h3>
+				<table>
+					<tr>
+						<td><%= _('Name').translate() %>:</td>
+						<td>
+							<%= view.model.get('firstname') || '' %> <%= view.model.get('middlename') || '' %> <%= view.model.get('lastname') || '' %>
+						</td>
+					</tr>
+					<tr>
+						<td><%= _('Email').translate() %>:</td>
+						<td><%= view.model.get('email') %></td>
+					</tr>
+					<tr>
+						<td><%= _('Phone').translate() %>:</td>
+						<td><%= view.model.get('phone') %></td>
+					</tr>
+					<tr>
+						<td><%= _('Password').translate() %>:</td>
+						<td>***********</td>
+					</tr>
+				</table>
+				<a class="box-btn editProfileInformation" href="/profileinformation"><%= _('Edit').translate() %></a>
+			</div>
+			<div class="well">
+				<h3><%= _('Shipping').translate() %></h3>
+				<% var default_shipping = view.model.get('defaultShippingAddress') %>
+				<% if ( default_shipping.isNew() || default_shipping.get('defaultshipping') !== 'T' ) { %>
+					<p><%= _('We have no default address on file for this account.').translate() %></p>
+					<a href="#" class="box-btn editShippingAddress"><%= _('Create New Address').translate() %></a>
+				<% } else { %>
+					<p>
+						<b>
+							<%= default_shipping.get('label') || default_shipping.get('company') || default_shipping.get('fullname') %>
+						</b>
+						<br>
+						<% if ( default_shipping.get('label') && default_shipping.get('company') ) { %>
+							<%= default_shipping.get('company') %> <br>
+							<%= default_shipping.get('fullname') %> <br>
+						<% } else if ( default_shipping.get('label') ? !default_shipping.get('company') : default_shipping.get('company') ) { %><!-- label xor company -->
+							<%= default_shipping.get('fullname') %> <br>
+						<% } %>
+						
+						<%= default_shipping.get('addr1') %> <br>
+						<% if ( default_shipping.get('addr2') ) { %>
+							<%= default_shipping.get('addr2') %> <br>
+						<% } %>
+						<%= default_shipping.get('city') +', '+ default_shipping.get('state') +' '+ default_shipping.get('zip') %> <br>
+						<%= default_shipping.get('country') %> <br>
+						<%= default_shipping.get('phone') %>
+					</p>
+					<a href="#" class="editShippingAddress"><%= _('Edit').translate() %></a>
+				<% } %>
+			</div>
+			
+			<div class="well">
+				<h3><%= _('Payment').translate() %></h3>
+				<% var default_creditcard = view.model.get('defaultCreditCard') %>
+				<% if ( default_creditcard.isNew() || default_creditcard.get('ccdefault') !== 'T' ) { %>
+					<p><%= _('We have no default credit card on file for this account.').translate() %></p>
+					<a href="#" class="editCreditCard"><%= _('Add a Credit Card').translate() %></a>
+				<% } else { %>
+					<p>
+						<b><%= default_creditcard.get('paymentmethod').name %></b><br>
+						<%= default_creditcard.get('ccname') %> <br>
+						<%= default_creditcard.get('ccnumber') %> <br>
+						<%= _('Exp Date').translate() +': '+ default_creditcard.get('expmonth') +'/'+ default_creditcard.get('expyear') %> <br>
+					</p>
+					<a href="#" class="box-btn editCreditCard"><%= _('Edit').translate() %></a>
+				<% } %>
+			</div>
+		</div>
+		<div class="span6">
+			${homeBanner()}
+		</div>
+	</div>
+</section>

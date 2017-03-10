@@ -1,0 +1,20 @@
+<% registerMacro('homeProfile', function(view) { %>
+<%
+	var model = view.model
+	,	company = model.get('companyname');
+%>
+<article class="well home-profile">
+	<div class="well-header"><h4><%= _('Profile').translate() %></h4></div>
+	<div class="well-body">
+		<p><%= model.get('firstname') || '' %> <%= model.get('middlename') || '' %> <%= model.get('lastname') || '' %></p>
+		<% if (company) { %>
+			<p><%= company %></p>
+		<% } %>
+		<p><%= model.get('email') %></p>
+		<p><%= _.formatPhone(model.get('phone') || '', view.application.getConfig('siteSettings.phoneformat')) %></p>
+	</div>
+	<div class="well-footer">
+		<a class="btn-link editProfileInformation" href="/profileinformation"><%= _('Edit').translate() %></a>
+	</div>
+</article>
+<%})%>

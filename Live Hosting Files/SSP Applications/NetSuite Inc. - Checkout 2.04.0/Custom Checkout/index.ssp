@@ -1,0 +1,169 @@
+<%
+	var SiteSettings
+	,	parameters
+	,	siteType
+	,	Environment
+	,	Language
+	,	Currency
+	,	Error
+	,	cart_bootstrap
+	,	login;
+
+	try
+	{
+		SiteSettings = Application.getModel('SiteSettings').get();
+		siteType = SiteSettings.sitetype; 
+		parameters = request.getAllParameters();
+
+		Environment = Application.getEnvironment(session, request); 
+		Language = Environment.currentLanguage && Environment.currentLanguage.locale || '';
+		Currency = Environment.currentCurrency && Environment.currentCurrency.code || '';
+
+		cart_bootstrap = true;
+		login = false;
+
+		parameters.fragment = '';
+		
+		if (session.isChangePasswordRequest())
+		{
+			parameters.fragment = 'reset-password';
+			login = true;
+		}
+		else if (
+					(SiteSettings.registration.registrationoptional !== 'T' && !session.isLoggedIn())
+				||	(!SC.Configuration.checkout_skip_login && !session.isLoggedIn())
+				||	(parameters.is && (parameters.is === 'login' || parameters.is === 'register') && !session.isLoggedIn())
+				||	(parameters.is && (parameters.is === 'login' || parameters.is === 'register') && session.getCustomer().isGuest())
+				||	(SC.Configuration.checkout_skip_login && !session.isLoggedIn() && session.isRecognized())
+				)
+		{
+			delete parameters.sitepath;
+			parameters.fragment = 'login-register';
+			login = true;
+		}
+		
+		if (request.getParameter('paypalexpress') === 'T')
+		{
+			Application.getModel('LiveOrder').redirectToPayPalExpress();
+			return;
+		}
+		else if (request.getParameter('paypal') === 'T')
+		{
+			Application.getModel('LiveOrder').redirectToPayPal();
+			return;
+		}
+		else if (request.getParameter('paypal') === 'DONE')
+		{
+			Application.getModel('LiveOrder').backFromPayPal();
+		}
+
+		cart_bootstrap = !login; // we dont want to bootstrap the cart in login/register page
+	}
+	catch(e)
+	{
+		Error = Application.processError(e);
+	}
+%>
+
+<!DOCTYPE html>
+<html <%= Language ? 'lang="' + Language.replace('_', '-') + '"' : '' %>>
+<head>
+<link rel="shortcut icon" href="<%= session.getAbsoluteUrl("checkout", "img/favicon.ico") %>" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title><%= login ? 'Sign In' : 'Checkout' %></title>
+<% if (siteType === 'STANDARD') { %>
+<link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'skins/standard/styles-sitebuilder.css') %>">
+
+<% } %>
+<script>
+var SC = window.SC = { 
+	ENVIRONMENT: {
+		jsEnvironment: (typeof nsglobal === 'undefined') ? 'browser' : 'server'
+	}
+,	isCrossOrigin: function() { return '<%= Environment.currentHostString %>' !== document.location.hostname; }
+,	isPageGenerator: function() { return typeof nsglobal !== 'undefined'; }
+,	getSessionInfo: function(key)
+	{
+		var session = SC.SESSION || SC.DEFAULT_SESSION || {};
+		return (key) ? session[key] : session;
+	}
+};
+<% /* Define a function to load script at runtime
+	The script can be removed of the generated html by the server seo, please see Starter.js. */ %>
+function loadScript(data)
+{
+	'use strict';		
+	
+	var element;
+	if (data.url)
+	{
+		element = '<script src="'+ data.url +'"></' + 'script>';
+	}
+	else
+	{
+		element = '<script>'+ data.code + '</' + 'script>';
+	}
+	if (data.seo_remove)
+	{
+		document.write(element);
+	}
+	else
+	{ 
+		document.write('</div>'+ element +'<div class="seo-remove">');
+	}
+}
+</script>
+<!--[if lt IE 9]>
+<script src="<%= session.getAbsoluteUrl('shopping', 'js/utils/html5shiv.js') %>"></script>
+<![endif]-->
+<link rel="stylesheet" href="https://system.netsuite.com/c.297799/SSP Applications/NetSuite Inc. - Checkout 2.04.0/Custom Checkout/css/checkout.css">
+<link rel="stylesheet" href="https://system.netsuite.com/c.297799/SSP Applications/NetSuite Inc. - Checkout 2.04.0/Custom Checkout/css/ng-styles.css">	
+</head>
+<body>
+<noscript>
+<div class="container">
+<div class="alert alert-error alert-noscript">
+	<strong>Javascript is disabled on your browser.</strong><br>
+	To view this site, you must enable JavaScript or upgrade to a JavaScript-capable browser.
+</div>
+</div>
+</noscript>
+<% if (siteType && siteType === 'STANDARD') { %>
+	<div id='div__header' style="overflow: hidden;" class='noprint' leftmargin='0' topmargin='0' marginwidth='1' >
+		
+	</div>
+<% } %>
+
+<div id="main"></div>
+
+<% if (login) { %>
+	<script src="<%= session.getAbsoluteUrl('checkout', 'sc.environment.ssp?lang=' + Language + '&cur=' + Currency + (cart_bootstrap ? "&cart-bootstrap=T" : "") ) %>"></script>
+<% } else { %>
+	<script>
+		loadScript({
+			url: '<%= session.getAbsoluteUrl("checkout", "sc.environment.ssp?lang=" + Language + "&cur=" + Currency + (cart_bootstrap ? "&cart-bootstrap=T" : "") ) %>&t=' + (new Date().getTime())
+		});
+	</script>
+<% } %>
+<% if (Error) { %>
+	<script>SC.ENVIRONMENT.contextError = <%= JSON.stringify(Error) %>;</script>
+<% } %>
+<script>
+	window.location.hash = !~window.location.hash.indexOf('login-register') && !'<%= parameters.fragment %>' ? window.location.hash : '<%= parameters.fragment %>';
+</script>
+<script src="<%= session.getAbsoluteUrl('checkout', 'js/Application-01537a9c36c3.js') %>"></script>
+<script src="<%= session.getAbsoluteUrl('checkout', 'templates/Templates-0159b751e5d8.js') %>"></script>
+<script>
+	<% if (login) { %>
+		SC.Application('Checkout').Configuration.currentTouchpoint = 'login';
+	<% } %>
+</script>
+<% if (siteType === 'ADVANCED') { %>
+<link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'skins/standard/Styles-01521deac9a0.css') %>">
+<% } %>
+<% if (typeof(release_metadata) != 'undefined') { %>
+<!-- <%= JSON.stringify(release_metadata) %> -->
+<% } %>
+</body>
+</html>

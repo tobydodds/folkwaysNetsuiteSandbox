@@ -1,0 +1,9 @@
+<% registerMacro('transactionsNavigation', function ( page ) { %>
+<form action="#" class="form-inline">
+	<label for="transaction_navigation"><%= _('View').translate() %></label>
+	<select name="transaction_navigation" id="transaction_navigation" class="input-medium">
+		<option value="#ordershistory" <%= page === 'ordershistory' ? 'selected' : '' %>><%= _('All Orders').translate() %></option>
+		<option value="#receiptshistory" <%= page === 'reciptshistory' ? 'selected' : '' %>><%= _('All Receipts').translate() %></option>
+	</select>
+</form>
+<% }) %>

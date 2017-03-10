@@ -1,0 +1,558 @@
+<%
+	var model = view.model
+	,	nonshippable = view.getNonShippableItems()
+	,	fulfillmentAddresses = view.getFulfillmentAddresses()
+	,	lines = model.get('lines')
+	,	collapse_elements = view.application.getConfig('collapseElements')
+
+	,	any_line_purchasable = lines.any(function (line)
+		{
+			return line.get('item').get('_isPurchasable');
+		})
+	,	all_gift_certificates = lines.all(function (line)
+		{
+			return line.get('item').get('itemtype') === 'GiftCert';
+		})
+	,	url = _.getDownloadPdfUrl({
+			asset: 'order-details'
+		,	id: model.get('internalid')
+		})
+	,	billaddress = model.get('addresses').get(model.get('billaddress'))
+	,	ordershipaddress = model.get('shipaddress') ? model.get('addresses').get(model.get('shipaddress')) : null
+	,	paymentmethod = model.get('paymentmethods') && model.get('paymentmethods').findWhere({primary: true})
+	,	return_authorizations = view.getReturnAuthorizations();
+%>
+<section>
+	<header>
+		<h3>
+			<%= _('Order <b>#<span class="order-number">$(0)</span></b>').translate(model.get('order_number')) %>
+			<span class="pull-right hidden-phone strong total-formatted">
+				<%= model.get('summary').total_formatted %>
+			</span>
+		</h3>
+		<a href="/ordershistory" class="back-btn"><%= _('&lt; Back to Order History').translate() %></a>
+	</header>
+
+	<hr class="divider-small">
+
+	<div data-type="alert-placeholder"></div>
+
+	<% if (return_authorizations.length) { %>
+		<div class="returnauthorizations-warning alert alert-warning" data-type="info-returns"><%=_('You have returns associated with this order. <a href="#">View Details</a>').translate()%></div>
+	<% } %>
+	<!-- HEADER INFORMATION -->
+	<div class="header-information">
+		<div class="row-fluid">
+			<div class="span6">
+				<p class="info">
+					<%= _('Date: <span class="date">$(0)</span>').translate(model.get('date')) %>
+				</p>
+			</div>
+			<div class="span6 col-status-record">
+				<p class="info">
+					<%= _('Status: <span class="status">$(0)</span>').translate(model.get('status')) %>
+				</p>
+			</div>
+			<div class="span12 visible-phone">
+				<p class="info">
+					<%= _('Amount: <span class="total-formatted">$(0)</span>').translate(model.get('summary').total_formatted) %>
+				</p>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="row-fluid">
+		<div class="span8 transaction-summary-one-col-tablet">
+
+			<% if(ordershipaddress){ %>
+
+				<div class="shipping-information-details shipping-information" data-id="<%=model.get('shipaddress')%>">
+
+						<div class="row-fluid">
+							<!-- SHIPPING INFORMATION -->
+							<div class="span6">
+								<div>
+									<span class="text-light">
+										<%= _('Shipping Address').translate() %>
+									</span>
+								</div>
+								<div class="shipping-information-info">
+									<address><%= SC.macros.address(ordershipaddress, {hideDefaults: true, hideActions: true}) %></address>
+								</div>
+							</div>
+							<div class="span6">
+								<div class="text-light">
+									<%= _('Delivery Method').translate() %>
+								</div>
+								<div class="delivery-method">
+									<%  var ordershipmethod = model.get('shipmethod');
+										if(model.get('shipmethods')._byId[ordershipmethod]){ %>
+											<%= model.get('shipmethods')._byId[ordershipmethod].getFormattedShipmethod() %>
+										<% } else if (ordershipmethod.name) { %>
+											<%= ordershipmethod.name %>
+										<% } else { %>
+											<%= _('No Delivery Method Selected').translate() %>
+										<% } %>
+								</div>
+							</div>
+						</div>
+			<% } %>
+				<!-- FULFILLMENT UNFULLFILED -->
+				<%
+					var unfulfilled = view.getUnfulfilled()
+					,   lines_length = unfulfilled.length %>
+				<% if (lines_length) { %>
+				<div class="row-fluid control-group item-container accordion-section unfulfilled" data-type="accordion">
+					<div class="well" data-action="items-expander">
+						<div class="well-header">
+							<span class="items-drop-down">
+							<%= lines_length > 1 ? _('Products pending shipment ($(0))').translate(lines_length) : _('Product pending shipment ($(0))').translate(lines_length) %>
+							</span>
+							<a href="#" class="pull-right"><i class="icon-plus  <%= collapse_elements ? 'items-maximize' : 'icon-minus items-minimize' %>"></i></a>
+						</div>
+					</div>
+					<div class="sst-mst" data-content="items-body" <%= collapse_elements ? 'style="display: none;"' : '' %>>
+						<% _.each(unfulfilled, function (line) { %>
+
+								<!-- FULLFILLMENT LINES -->
+								<%
+									var	item_details = line && {
+											item: line.get('item')
+										,	id: line.get('internalid')
+										,	options: line.get('options')
+										,	partial_quantity: line.get('partial_quantity')
+										,	quantity: line.get('quantity')
+										,	price: line.get('rate_formatted')
+										,	amount_label: _('Total Amount').translate()
+										,	amount: line.get('amount') || line.get('rate')
+										,	total: line.get('total')
+										,	discount: line.get('discount')
+										,	reorder: line.get('item').get('_isPurchasable')
+										,	application: view.application
+										,	type: line.get('type')
+										};
+								%>
+								<%= item_details && itemDetails(item_details) %>
+
+								<!-- FULLFILLMENT LINES ENDS -->
+						<% }) %>
+					</div>
+				</div>
+				<% } %>
+				<!-- FULLFILLMENT UNFULLFILED ENDS -->
+
+
+				<!-- SHIPPING GROUPS -->
+				<%
+					_.each(view.getFulfillmentAddresses(), function (fulfillment_address_id) {
+						var fulfillments = view.getFulfillments(fulfillment_address_id);
+				%>
+					<% if(!ordershipaddress){ %>
+					<div class="shipping-information-details shipping-information" data-id="<%=fulfillment_address_id%>">
+							<!-- SHIPPING INFORMATION -->
+							<div>
+								<div>
+									<span class="text-light">
+										<%= _('Shipping Address').translate() %>
+									</span>
+								</div>
+								<div class="shipping-information-info">
+								<% var shipaddress = model.get('addresses').get(fulfillment_address_id); %>
+									<address><%=  ( shipaddress && SC.macros.address(shipaddress, {hideDefaults: true, hideActions: true}) ) || _('N/A').translate() %></address>
+								</div>
+							</div>
+							<!-- SHIPPING INFORMATION ENDS -->
+					<% } %>
+						<%
+							var lines_length = 0;
+							_.each(fulfillments, function (fulfillment) {
+								lines_length += fulfillment.get('lines').length;
+							});
+						if(lines_length>0){
+						%>
+						<!-- FULFILLMENT FULFILLEDS -->
+						<div class="row-fluid control-group item-container accordion-section fulfillment" data-type="accordion">
+							<div class="well" data-action="items-expander">
+								<div class="well-header">
+									<span class="items-drop-down">
+									<%= lines_length > 1 ? _('Products shipped ($(0))').translate(lines_length) : _('Product shipped ($(0))').translate(lines_length) %>
+									</span>
+									<a href="#" class="pull-right"><i class="icon-plus  <%= collapse_elements ? 'items-maximize' : 'icon-minus items-minimize' %>"></i></a>
+								</div>
+							</div>
+							<div class="sst-mst no-margin" data-content="items-body" <%= collapse_elements ? 'style="display: none;"' : '' %>>
+
+								<% _.each(fulfillments, function (fulfillment) { %>
+									<!-- FULLFILLMENT TITLE -->
+									<div class="fulfillment-header" data-id="<%=fulfillment.get('internalid')%>">
+										<div class="popover-content row-fluid">
+											<div class="span6">
+											<span class="ship-date">
+												<p><%= _('Shipped on: $(0)').translate(fulfillment.get('date')) %></p>
+											</span>
+											<div>
+												<%= trackingNumbers({
+													trackingnumbers:  fulfillment.get('trackingnumbers') || []
+												,	showContentOnEmpty: false
+												,	contentClass: ''
+												,	collapseElements: collapse_elements
+												,	trackingURLService: view.getTrackingServiceUrl
+												,	trackingNameService: view.getTrackingServiceName
+												}) %>
+											</div>
+										</div>
+											<div class="span6">
+												<div class="text-light">
+													<%= _('Delivery Method').translate() %>
+												</div>
+												<div class="delivery-method">
+													<% var shipmethod = fulfillment.get('shipmethod').internalid;
+														if(model.get('shipmethods')._byId[shipmethod]){ %>
+															<%= model.get('shipmethods')._byId[shipmethod].getFormattedShipmethod() %>
+														<% } else if (fulfillment.get('shipmethod').name) { %>
+															<%= fulfillment.get('shipmethod').name %>
+														<% } else { %>
+															<%= _('No Delivery Method Selected').translate() %>
+														<% } %>
+												</div>
+											</div>
+										</div>
+
+									</div>
+									<div class="fulfillment-body">
+									<!-- FULLFILLMENT LINES -->
+									<%
+									_.each(fulfillment.get('lines'), function (fulfillment_line)
+									{
+										var line = lines.get(fulfillment_line.line_id)
+										,	item_details = line && {
+												item: line.get('item')
+											,	id: line.id
+											,	options: line.get('options')
+											,	partial_quantity: fulfillment_line.partial_quantity
+											,	quantity: fulfillment_line.quantity
+											,	price: line.get('rate_formatted')
+											,	amount_label: _('Total Amount').translate()
+											,	amount: fulfillment_line.rate || line.get('amount')
+											,	total: line.get('total')
+											,	discount: line.get('discount')
+											,	reorder: line.get('item').get('_isPurchasable')
+											,	application: view.application
+											,	type: line.get('type')
+											};
+									%>
+									<%= item_details && itemDetails(item_details) %>
+									<% }) %>
+									<!-- FULLFILLMENT LINES ENDS -->
+									</div>
+								<% }) %>
+							</div>
+						</div>
+						<!-- FULLFILLMENT FULFILLEDS ENDS -->
+					<% }
+						if(!ordershipaddress){ %>
+						</div>
+						<% } %>
+
+				<% }) %>
+				<!-- SHIPPING GROUPS ENDS -->
+
+			<% if(ordershipaddress){ %>
+				</div>
+			<% } %>
+			<!-- NON-SHIPPABLE -->
+			<% if (nonshippable.length) { %>
+			<div class="row-fluid control-group item-container accordion-section non-shippable" data-type="accordion">
+				<div class="well" data-action="items-expander">
+					<div class="well-header">
+						<span class="items-drop-down">
+						<%= nonshippable.length > 1 ? _('Products that don\'t require shipping ($(0))').translate(nonshippable.length) : _('Product that doesn\'t require shipping ($(0))').translate(nonshippable.length) %>
+						</span>
+						<a href="#" class="pull-right"><i class="icon-plus  <%= collapse_elements ? 'items-maximize' : 'icon-minus items-minimize' %>"></i></a>
+					</div>
+				</div>
+				<div class="sst-mst" data-content="items-body" <%= collapse_elements ? 'style="display: none;"' : '' %>>
+					<% _.each(nonshippable, function (line) {
+
+						item_details = {
+										item: line.get('item')
+									,	id: line.id
+									,	options: line.get('options')
+									,	quantity: line.get('quantity')
+									,	price: line.get('rate_formatted')
+									,	amount: line.get('amount')
+									,	total: line.get('total')
+									,	discount: line.get('discount')
+									,	reorder: line.get('item').get('_isPurchasable')
+									,	application: view.application
+									,	type: line.get('type')
+									}
+
+						%>
+						<%= itemDetails(item_details) %>
+					<% }) %>
+				</div>
+			</div>
+			<% } %>
+			<!-- NON-SHIPPABLE ENDS -->
+
+			<!-- PAYMENT INFORMATION -->
+			<div class="row-fluid control-group accordion-section payment-information-container" data-type="accordion">
+				<div class="well-secundary" data-action="items-expander">
+					<div class="well-header">
+						<%= _('<span class="payment-information-drop-down">Payment Information</span>').translate() %>
+						<a href="#" class="pull-right"><i class="icon-plus"></i></a>
+					</div>
+				</div>
+				<div class="sst-mst" data-content="items-body" style="display: none;">
+					<div class="row-fluid">
+						<div class="span12 popover-content">
+							<div class="payment-information">
+								<div class="main-container">
+									<div class="span6">
+										<div>
+											<span class="text-light">
+												<%= _('Payment Method').translate() %>
+											</span>
+										</div>
+										<div class="payment-information-info">
+											<%= SC.macros.formatPaymentMethod(paymentmethod, view.application.getConfig('creditCardIcons')) || _('N/A').translate() %>
+										</div>
+
+										<% if (model.get('receipts').length) { %>
+											<div>
+												<p>&nbsp;</p>
+												<span class="text-light">
+													<%= _('Payment Transactions').translate() %>
+												</span>
+											</div>
+											<div data-type="payment-transaction-container">
+												<% model.get('receipts').each(function (receipt) {
+													var data_type = receipt.get('recordtype') === 'CustInvc' && !view.application.getConfig('is_basic') ? 'invoice' : 'receipt';
+													%>
+													<p data-type="<%= data_type%>" data-id="<%= receipt.get('internalid') %>">
+														<% if (receipt.get('recordtype') === 'CustInvc') { %>
+															<% var invoice_href = (view.application.getConfig('is_basic') ? 'receiptshistory/view': 'invoices') + '/' + receipt.get('internalid') %>
+															<%= _('Invoice: <a href="$(1)">#$(0)</a>').translate(receipt.get('order_number'), invoice_href) %> <br>
+															<span data-type="payment-date"><%= receipt.get('date') %></span> <span data-type="payment-total" ><%= receipt.get('summary').total_formatted %></span>
+														<% } else { %>
+															<%= _('Receipt: #$(0)').translate(receipt.get('order_number')) %> <br>
+															<span data-type="payment-date"><%= receipt.get('date') %></span> <span data-type="payment-total"><%= receipt.get('summary').total_formatted %></span>') <a href="/receiptshistory/view/<%= receipt.get('internalid') %>">View</a>
+														<% } %>
+													</p>
+												<% }) %>
+											</div>
+										<% } %>
+									</div>
+									<div class="span6">
+										<div>
+											<span class="text-light">
+												<%= _('Bill to').translate() %>
+											</span>
+										</div>
+										<div class="billaddress-info">
+											<address><%= ( ( billaddress && SC.macros.address(billaddress, {hideDefaults: true, hideActions: true}) ) || _('N/A').translate()) %></address>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- PAYMENT INFORMATION ENDS -->
+
+
+			<% if (return_authorizations.length) { %>
+			<!-- RETURNS AUTHORIZATIONS -->
+			<div class="row-fluid control-group returns-container accordion-section returnauthorizations-details-header" data-type="accordion">
+				<div class="well-secundary" data-action="items-expander">
+					<div class="well-header">
+						<%= _('<span class="items-drop-down">Returns ($(0))</span>').translate(return_authorizations.totalLines) %>
+						<a href="#" class="pull-right"><i class="icon-plus"></i></a>
+					</div>
+				</div>
+				<div class="sst-mst returnauthorizations-details-body" data-content="items-body" style="display: none;">
+					<% return_authorizations.each(function (return_authorization) { %>
+
+							<div class="row-fluid">
+								<div class="popover-content">
+									<% if (return_authorization.get('tranid')) { %>
+										<p><%= _('Return authorization: <a href="returns/$(1)">#$(0)</a>').translate(return_authorization.get('tranid'), return_authorization.get('internalid')) %></p>
+									<% } %>
+									<p><%= _('Status').translate() %>: <span class="status"><%= return_authorization.get('status') %></span></p>
+								</div>
+							</div>
+
+							<div class="row-fluid nav-tabs nav-tabs-heading hidden-phone">
+								<div class="span4 offset1 popover-content popover-heading"><%= _('Item').translate() %></div>
+								<div class="span1 popover-content popover-heading"><%= _('Qty').translate() %></div>
+								<div class="span3 popover-content popover-heading col-amount"><%= _('Unit price').translate() %></div>
+								<div class="span3 popover-content popover-heading col-amount"><%= _('Amount').translate() %></div>
+							</div>
+
+							<%  return_authorization.get('lines').each(function (item) {
+
+								var row_item = item.get('item') || item
+								,	name = SC.macros.itemLinkName({item: row_item, showLinkeable: true})
+							%>
+							<div class="row-fluid nav-tabs" data-item="item <%= row_item.get('internalid') %>">
+								<div class="span1 hidden-phone item-image">
+									<img src="<%= view.application.resizeImage(row_item.get('_thumbnail').url, 'tinythumb') %>" alt="<%= row_item.get('_thumbnail').altimagetext %>">
+								</div>
+								<div class="span4 popover-content">
+									<div>
+										<span class="item-name"><%= name %></span>
+									</div>
+									<div>
+										<% if (row_item.type === 'Discount') { %>
+											<%= _('Discount').translate() %>
+										<% } else { %>
+											<%= _('<span class="text-light">SKU</span>: <span class="item-sku">#$(0)</span>').translate(row_item.get('_sku')) %>
+										<% } %>
+									</div>
+									<div>
+										<%= row_item.renderAllOptionSelected() %>
+									</div>
+									<% if (!row_item.get('_isInStock') && row_item.get('_showOutOfStockMessage')) { %>
+										<div>
+											<span class="text-light"><%= SC.macros.itemDetailsStock(row_item.getStockInfo()) %></span>
+										</div>
+									<% } %>
+									<% if (!row_item.get('isonline')) {  %>
+										<div>
+											<p class="alert alert-warning"><%= _('This item is no longer available').translate() %></p>
+										</div>
+									<% } %>
+								</div>
+								<div class="span1 popover-content">
+									<%= _('<span class="visible-phone text-light">Quantity</span> <span class="item-quantity">$(0)</span>').translate(Math.abs(item.get('quantity'))) %>
+								</div>
+								<div class="span3 popover-content col-amount">
+									<%= _('<span class="visible-phone text-light">Unit price</span> <span class="item-reason">$(0)</span>').translate(_.formatCurrency(item.get('rate'))) %>
+								</div>
+								<div class="span3 popover-content col-amount">
+									<%= _('<span class="visible-phone text-light">Amount</span> <span class="item-amount">$(0)</span>').translate(_.formatCurrency(item.get('amount'))) %>
+								</div>
+							</div>
+						<% }) %>
+					<% }) %>
+					</div>
+				</div>
+			<!-- RETURNS AUTHORIZATIONS ENDS -->
+			<% } %>
+		</div>
+
+		<div class="span4 transaction-summary-one-col-tablet">
+			<div class="list-header summary-container">
+				<!-- SUMMARY -->
+				<div class="nav-tabs row-fluid control-group strong">
+					<%= _('SUMMARY').translate() %>
+				</div>
+				<div class="row-fluid control-group">
+					<div class="span8  ">
+						<%= _('Subtotal').translate() %>
+					</div>
+					<div class="span4 cell-alternative subtotal text-right">
+						<%= model.get('summary').subtotal_formatted  %>
+					</div>
+				</div>
+
+				<% if (parseFloat(model.get('summary').discounttotal)) { %>
+				<div class="row-fluid control-group">
+					<div class="span8">
+						<%= _('Discount').translate() %>
+					</div>
+					<div class="span4 cell-alternative discounttotal text-right">
+						<%= model.get('summary').discounttotal_formatted  %>
+					</div>
+				</div>
+				<% } %>
+
+				<% if ( typeof model.get('summary').shippingcost !== 'undefined' && model.get('summary').shippingcost != null ) { %>
+				<div class="row-fluid control-group">
+					<div class="span8">
+						<%= _('Shipping Total').translate() %>
+					</div>
+					<div class="span4 cell-alternative shippingcost text-right">
+						<%= model.get('summary').shippingcost_formatted %>
+					</div>
+				</div>
+				<% } %>
+
+				<% if ( parseFloat( model.get('summary').handlingcost ) ) { %>
+				<div class="row-fluid control-group">
+					<div class="span8">
+						<%= _('Handling Total').translate() %>
+					</div>
+					<div class="span4 cell-alternative handlingcost text-right">
+						<%= model.get('summary').handlingcost_formatted %>
+					</div>
+				</div>
+				<% } %>
+
+				<% if ( parseFloat( model.get('summary').giftcertapplied ) ) { %>
+				<div class="row-fluid control-group">
+					<div class="span8">
+						<%= _('Gift Cert Total').translate() %>
+					</div>
+					<div class="span4 cell-alternative giftcertapplied text-right">
+						<%= model.get('summary').giftcertapplied_formatted %>
+					</div>
+				</div>
+				<% } %>
+
+				<% if ( model.get('promocode') ) { %>
+				<div class="row-fluid control-group">
+					<div class="span8">
+						<%= _('Promo Code').translate() %>
+					</div>
+					<div class="span4 cell-alternative promocode text-right">
+						<%= model.get('promocode').code %>
+					</div>
+				</div>
+				<% } %>
+
+				<div class="nav-tabs row-fluid control-group">
+					<div class="span8">
+						<%= _('Tax Total').translate() %>
+					</div>
+					<div class="span4 cell-alternative taxtotal text-right">
+						<%= model.get('summary').taxtotal_formatted %>
+					</div>
+				</div>
+
+				<div class="row-fluid control-group strong">
+					<div class="span8">
+						<%= _('Total').translate() %>
+					</div>
+					<div class="span4 cell-alternative total text-right last">
+						<%= model.get('summary').total_formatted %>
+					</div>
+				</div>
+			</div>
+
+			<div class="row-fluid">
+			<% if (any_line_purchasable && !all_gift_certificates) { %>
+				<!-- REORDER ALL ITEMS -->
+					<div class="span4 transaction-summary-one-col-desktop margin-top-10">
+						<a href="/reorderItems?order_id=<%= model.get('internalid') %>" class="btn btn-expanded btn-block btn-large re-order-all-items"><%= _('Reorder All Items').translate() %></a>
+					</div>
+			<% } %>
+
+			<!-- DOWNLOAD AS PDF -->
+				<div class="span4 transaction-summary-one-col-desktop margin-top-10">
+					<a href="<%= url %>" target="_blank" class="btn btn-expanded btn-block btn-large download-pdf"><%= _('Download as PDF').translate() %></a>
+				</div>
+
+				<% if (view.isReturnable()) { %>
+				<!-- REQUEST RETURN -->
+					<div data-permissions="transactions.tranRtnAuth.2" class="span4 transaction-summary-one-col-desktop margin-top-10">
+						<a href="/returns/new/order/<%= model.get('internalid') %>" class="btn btn-expanded btn-block btn-large request-return"><%= _('Request a Return').translate() %></a>
+					</div>
+				<% } %>
+				</div>
+		</div>
+	</div>
+</section>

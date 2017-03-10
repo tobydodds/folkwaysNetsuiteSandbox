@@ -1,0 +1,18 @@
+<% registerMacro('displayHeaderInformation', function (elements) { %>
+
+	<% elements_per_row = elements.length > 4 ? 4 : elements.length %>
+	<% var span = 12 / elements_per_row %>
+	<div class="header-information">
+		<div class="row-fluid">
+		<% _.each(elements, function (element, index){ %>
+			<% if ((index % elements_per_row) == 0 && index > 0){ %>
+				</div>
+				<div class="row-fluid">
+			<% } %>
+			<div class="header-information-element span<%= span  + ' ' + (element.addClass || '') %>">
+				<%= element.value %>
+			</div>
+		<% }) %>
+		</div>
+	</div>
+<% }) %>

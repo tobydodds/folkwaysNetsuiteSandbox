@@ -1,0 +1,351 @@
+<%
+	var model = view.model
+	,	lines = model.get('lines')
+
+	,	any_line_purchasable = lines.any(function (line)
+		{
+			return line.get('item').get('_isPurchasable');
+		})
+
+	,	all_gift_certificates = lines.all(function (line)
+		{
+			return line.get('item').get('itemtype') === 'GiftCert';
+		})
+
+	,	url = _.getDownloadPdfUrl({
+			asset: 'order-details'
+		,	id: model.get('internalid')
+		})
+
+	,	elements = [
+			{addClass: 'order-date', value: _('Date: $(0)').translate(model.get('date'))}
+		,	{addClass: 'hidden-phone', value: '<a target="_blank" class="download-pdf" href="' + url + '">' + _('Download as PDF').translate() + '</a>'}
+		]
+
+	,	return_authorizations = model.get('returnauthorizations');
+
+	if (SC.ENVIRONMENT.permissions.transactions.tranRtnAuth >= 2 && view.isReturnable())
+	{
+		elements.push({value: '<a class="request-return" href="/returns/new/order/' + model.get('internalid') + '">' + _('Request return').translate() + '</a>'});
+	}
+
+	if (any_line_purchasable && !all_gift_certificates)
+	{
+		elements.push({value: '<a href="#" class="re-order-all-items">' + _('Reorder All Items').translate() + '</a>'});
+	}
+
+	elements.push({value: _('Status: <span class="payment-status order-status">$(0)</span>').translate(model.get('status'))});
+%>
+<section>
+<h3>
+	<%= _('Order <b>#<span class="order-number">$(0)</span></b>').translate(model.get('order_number')) %>
+	<span class="pull-right hidden-phone strong total-formatted">
+		<%= model.get('summary').total_formatted %>
+	</span>
+</h3>
+<div data-type="alert-placeholder"></div>
+<a href="/ordershistory" class="back-btn"><%= _('&lt; Back to Order History').translate() %></a>
+<hr class="divider-small">
+
+<%= displayHeaderInformation(elements) %>
+
+<!-- Order Header Ends -->
+<% if (return_authorizations && return_authorizations.length) { %>
+	<div class="returnauthorizations-warning alert alert-warning"><%=_('You have returns associated with this order. <a href="#">View Details</a>').translate()%></div>
+<% } %>
+
+<!-- Shipping Groups -->
+<% _.each(view.shipgroups, function (ship_group, index) { %>
+	<!-- Fullfillment -->
+	<table class="table order-details order-details-body">
+		<col class="order-details-col1">
+		<col class="order-details-col2">
+		<col class="order-details-col3">
+		<tr class="alternate order-details-shipping-info">
+			<td>
+				<p><b><%= _('Ship To').translate() %></b></p>
+				<% var shipaddress = model.get('addresses').get(ship_group.shipaddress); %>
+				<p class="shipto-address"><%= ( ( shipaddress && shipaddress.getFormattedAddress() ) || _('N/A').translate()).replace(/\n/g, '<br>') %></p>
+			</td>
+			<td colspan="2">
+				<p><b><%= _('Delivery Method').translate() %></b></p>
+				<p class="delivery-method">
+				<% if (ship_group.tracking_numbers_summary.length) { %>
+					<% _.each(ship_group.tracking_numbers_summary, function (tracking_number, index) { %>
+						<%= _('$(0) - Shipment #$(1) $(2)').translate(tracking_number.method || 'N/A', tracking_number.shipment_index, tracking_number.trackingnumber) %> <br>
+					<% }) %>
+				<% } else if (ship_group.shipaddress && ship_group.shipmethod && model.get('shipmethods').get(ship_group.shipmethod)) { %>
+					<%= model.get('shipmethods').get(ship_group.shipmethod).getFormattedShipmethod() %>
+				<% } else { %>
+					<%= _('No Delivery Method Selected').translate() %>
+				<% } %>
+				</p>
+			</td>
+		</tr>
+		<% var shipment_index = 0; %>
+		<% _.each(ship_group.fulfillments, function (fulfillment, index) { %>
+		<% shipment_index++; %>
+			<!-- Fullfillment Title -->
+			<tr class="alternate order-details-items-summary">
+				<td colspan="3">
+					<b>
+						<% if (fulfillment.get('is_pending')) { %>
+							<%= _('Item Processing').translate() %>
+						<% } else { %>
+							<span class="ship-index">
+								<%= _('Shipment #$(0)').translate(shipment_index) %>
+							</span>
+							<span>:</span>
+							<span class="ship-date">
+								<%= _('Shipped on $(0)').translate(fulfillment.get('date')) %>
+							</span>
+							<% var trackingnumbers = fulfillment.get('trackingnumbers') || [] %>
+							<% if (trackingnumbers.length) { %>
+								<div class="pull-right">
+									<%= _('Tracking Numbers:').translate() %>
+									<% _.each(trackingnumbers, function (number, index) { %>
+										<%= index ? ', ' : '' %>
+										<a target="_blank" href="<%= view.getTrackingServiceUrl(number) %>"><%= number %></a>
+									<% }) %>
+								</div>
+							<% } %>
+						<% } %>
+					</b>
+				</td>
+			</tr>
+			<!-- Fullfillment Lines -->
+			<tr class="order-details-items-items">
+				<td colspan="3">
+					<table class="table order-lines">
+						<col class="order-items-col1">
+						<col class="order-items-col2">
+						<col class="order-items-col3">
+						<col class="order-items-col4">
+						<col class="order-items-col5">
+						<thead>
+							<tr>
+								<th class="text-light font-normal" colspan="2"><%= _('Items').translate() %></th>
+								<th class="text-light font-normal"><%= _('Qty').translate() %></th>
+								<th class="text-light font-normal"><%= _('Price').translate() %></th>
+								<th class="text-light font-normal right-aligned"><%= _('Total').translate() %></th>
+							</tr>
+						</thead>
+						<tbody>
+							<%
+								_.each(fulfillment.get('lines'), function (fulfillment_line, index)
+								{
+									var line = lines.get(fulfillment_line.line_id);
+									var item_details = line && {
+											item: line.get('item')
+										,	id: line.id
+										,	options: line.get('options')
+										,	quantity: fulfillment_line.quantity
+										,	price: line.get('rate_formatted')
+										,	amount: fulfillment_line.rate || line.get('amount')
+										,	total: line.get('total')
+										,	discount: line.get('discount')
+										,	reorder: line.get('item').get('_isPurchasable')
+										,	application: view.options.application
+										,	type: line.get('type')
+										}
+
+									,	shipgroup_subtotal = shipgroup_subtotal + (item_details ? item_details.amount : 0);
+
+							%>
+								<%= item_details && itemDetails(item_details) %>
+							<% }) %>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<!-- Fullfillment Lines Ends -->
+		<% }) %>
+		<!-- Fullfillment Ends -->
+	</table>
+<% }) %>
+
+<!-- Payment Information -->
+<table class="table order-details order-details-payment">
+	<col class="order-details-col1">
+	<col class="order-details-col2">
+	<col class="order-details-col3">
+	<!-- Payment Information Title -->
+	<tr>
+		<td colspan="3">
+			<h3><%= _('Payment Information').translate() %></h3>
+		</td>
+	</tr>
+
+	<!-- Payment Information Title Ends -->
+	<tr class="billing-info">
+		<td>
+			<p><b><%= _('Billing To').translate() %></b></p>
+			<% var billaddress = model.get('addresses').get(model.get('billaddress')); %>
+			<p><%= ( ( billaddress && billaddress.getFormattedAddress() ) || _('N/A').translate()).replace(/\n/g, '<br>') %></p>
+		</td>
+		<td>
+			<% var paymentmethod = model.get('paymentmethods') && model.get('paymentmethods').findWhere({primary: true}); %>
+			<% var receipts = model.get('receipts'); %>
+
+			<% if (paymentmethod && paymentmethod.get('type')) { %>
+				<p><b><%= _('Payment Method').translate() %></b></p>
+				<%= SC.macros.formatPaymentMethod(paymentmethod, view.application.getConfig('creditCardIcons')) %>
+			<% } else if (!receipts || receipts && !receipts.length) { %>
+				<p><b><%= _('Payment Method').translate() %></b></p>
+				<%= _('N/A').translate() %>
+			<% } %>
+
+			<% if (receipts && receipts.length) { %>
+				<p><b><%= _('Payment Transactions').translate() %></b></p>
+				<% _.each(receipts.models, function (receipt, index) { %>
+					<p>
+						<% if (receipt.get('recordtype') === 'CustInvc') { %>
+							<%= _('Invoice: #$(0)').translate(receipt.get('order_number')) %> <br>
+							<%= receipt.get('date') +' '+ receipt.get('summary').total_formatted %>
+
+							<a href="/<%= (view.application.getConfig('is_basic') ? 'receiptshistory/view': 'invoices') + '/' + receipt.get('internalid') %>">View</a>
+						<% } else { %>
+							<%= _('Receipt: #$(0)').translate(receipt.get('order_number')) %> <br>
+							<%= receipt.get('date') +' '+ receipt.get('summary').total_formatted %> <a href="/receiptshistory/view/<%= receipt.get('internalid') %>">View</a>
+						<% } %>
+					</p>
+				<% }) %>
+			<% } %>
+		</td>
+
+		<td class="billing-info-order-sumary">
+			<p class="order-summary-header"><b><%= _('Order Summary').translate() %></b></p>
+			<table class="table table-condensed order-sumary">
+				<col class="order-sumary-names">
+				<col class="order-sumary-values">
+					<tbody>
+						<tr>
+							<td class="order-sumary-name order-subtotal-name"><%= _('Order Subtotal').translate() %></td>
+							<td class="order-sumary-value order-subtotal-value"><%= model.get('summary').subtotal_formatted %></td>
+						</tr>
+						<%
+						var discounttotal = parseFloat(model.get('summary').discounttotal);
+						if (discounttotal || model.get('promocode')) { %>
+						<tr>
+							<td class="order-sumary-name"><%= _('Order Discount').translate() %>
+								<% if (model.get('promocode')) { %>
+									<p><span class="promocode-name"><%= _('Promo Code').translate() %></span>:&nbsp;<span class="promocode-value"><%= model.get('promocode').code %></span></p>
+								<% } %>
+							</td>
+							<td class="order-sumary-value"><span class="discounttotal"><%= discounttotal ? model.get('summary').discounttotal_formatted : '&nbsp;' %></span></td>
+						</tr>
+						<% } %>
+						<% if (parseFloat(model.get('summary').shippingcost)) { %>
+						<tr>
+							<td class="order-sumary-name shipping-total-name"><%= _('Shipping Total').translate() %></td>
+							<td class="order-sumary-value shipping-total-value"><%= model.get('summary').shippingcost_formatted %></td>
+						</tr>
+						<% } %>
+						<% if (parseFloat(model.get('summary').handlingcost)) { %>
+						<tr>
+							<td class="order-sumary-name handling-total-name"><%= _('Handling Total').translate() %></td>
+							<td class="order-sumary-value handling-total-value"><%= model.get('summary').handlingcost_formatted %></td>
+						</tr>
+						<% } %>
+
+						<% if (parseFloat(model.get('summary').giftcertapplied)) { %>
+						<tr>
+							<td class="order-sumary-name gift-cert-total-name"><%= _('Gift Cert Total').translate() %></td>
+							<td class="order-sumary-value gift-cert-total-value"><%= model.get('summary').giftcertapplied_formatted %></td>
+						</tr>
+						<% } %>
+						<tr>
+							<td class="order-sumary-name tax-total-name"><%= _('Tax Total').translate() %></td>
+							<td class="order-sumary-value tax-total-value"><%= model.get('summary').taxtotal_formatted %></td>
+						</tr>
+						<tr>
+							<th class="order-sumary-name total-name"><%= _('Order Total').translate() %></th>
+							<th class="order-sumary-value total-value"><%= model.get('summary').total_formatted %></th>
+						</tr>
+					</tbody>
+			</table>
+		</td>
+	</tr>
+</table>
+<!-- Shipping Groups Ends -->
+
+<!-- Returns Authorizations -->
+
+<% if (return_authorizations.length) { %>
+	<h3 id="returnauthorizations-details-header">
+		<i class="icon-chevron-right"></i>
+		<%= _('Returns').translate() %>
+	</h3>
+	<table class="table" id="returnauthorizations-details">
+		<col class="order-details-col1">
+		<col class="order-details-col2">
+		<col class="order-details-col3">
+		<!-- Payment Information Title -->
+		<tbody id="returnauthorizations-details-body">
+			<% return_authorizations.each(function (returnauthorization, index) { %>
+			<!-- Authorization Header -->
+			<tr class="alternate returnauthorizations-summary">
+				<td<% if (!returnauthorization.get('order_number')){ %> colspan="3"<% } %>>
+					<p>
+						<b><%= _('Status').translate() %></b>
+					</p>
+					<%= returnauthorization.get('status') %>
+				</td>
+
+				<% if (returnauthorization.get('order_number')) { %>
+					<td>
+						<p>
+							<b><%= _('Authorization Number').translate() %></b>
+						</p>
+						#<%= returnauthorization.get('order_number') %>
+					</td>
+					<td>
+						<p>
+							<b><%= _('Return To').translate() %></b>
+						</p>
+						<% if (returnauthorization.get('return_address')) { %>
+							<%= returnauthorization.get('return_address') %>
+						<% } else { %>
+							<%= _('N/A').translate() %>
+						<% } %>
+
+					</td>
+				<% } %>
+			</tr>
+			<!-- Authorization Header Ends -->
+			<!-- Authorization Lines -->
+			<tr>
+				<td colspan="3">
+					<table class="table order-lines">
+						<col class="order-items-col1">
+						<col class="order-items-col2">
+						<col class="order-items-col3">
+						<thead>
+							<tr>
+								<th colspan="2"><%= _('Item').translate() %></th>
+								<th><%= _('Qty').translate() %></th>
+							</tr>
+						</thead>
+						<tbody>
+						<% returnauthorization.get('lines').each(function (line, index) { %>
+							<%= itemDetails({
+								item: line.get('item')
+							,	options: line.get('options')
+							,	quantity: Math.abs(line.get('quantity'))
+							,	price: false
+							,	amount: false
+							,	reorder: line.get('item').get('_isPurchasable')
+							,	application: view.options.application
+							}) %>
+						<% }) %>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<!-- Authorization Lines Ends -->
+			<% }) %>
+		</tbody>
+	</table>
+<% } %>
+<!-- Returns Authorizations Ends -->
+</section>

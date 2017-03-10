@@ -1,0 +1,6 @@
+<div class="multishipto-enable-link-container">
+	<a href="#" data-action="change-status-multishipto" data-type="<%= view.model.get('ismultishipto') ? 'multishipto' : 'singleshipto' %>" ><%= view.model.get('ismultishipto') ? _('I want ship to a single address').translate() :  _('I want ship to multiple addresses').translate() %></a>
+	<% if (!view.model.get('ismultishipto')) { %>
+	<i class="multishipto-help-icon icon-question-sign"  data-toggle="tooltip" title="" data-original-title="<%= _('Click here if you want to divide your order and ship it to multiple addresses. All your data will be saved.').translate() %>" ></i>
+	<% } %>
+</div>

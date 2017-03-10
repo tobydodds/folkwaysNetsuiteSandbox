@@ -1,0 +1,15 @@
+<div id="layout" class="layout">
+	<% if (view.application.getConfig('siteSettings.sitetype') === 'ADVANCED') { %>
+	<header id="site-header" class="site-header">
+		<%= header(view) %>
+	</header>
+	<% } %>
+	<!-- Main Content Area -->
+	<div id="content" class="container content checkout-content"></div>
+	<!-- / Main Content Area -->
+	<% if (view.application.getConfig('siteSettings.sitetype') === 'ADVANCED') { %>
+	<footer id="site-footer" class="site-footer">
+		<%= footer(view) %>
+	</footer>
+	<% } %>
+</div>

@@ -1,0 +1,101 @@
+<%
+	var SiteSettings
+	,	siteType
+	,	Environment
+	,	Language
+	,	Currency
+	,	Error;
+	try
+	{
+		SiteSettings = Application.getModel('SiteSettings').get();
+		siteType = SiteSettings.sitetype;
+
+		Environment = Application.getEnvironment(session, request);
+		Language = Environment.currentLanguage && Environment.currentLanguage.locale || '';
+		Currency = Environment.currentCurrency && Environment.currentCurrency.code || '';
+	}
+	catch(e)
+	{
+		Error = Application.processError(e);
+	}
+%>
+<!DOCTYPE html>
+<html <%= Language ? 'lang="' + Language.replace('_', '-') + '"' : '' %>>
+<head>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Shopping Cart</title>
+	<% if (siteType && siteType === 'ADVANCED') { %>
+		<link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'skins/standard/styles.css') %>">
+	<% } else { %>
+		<link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'skins/standard/styles-sitebuilder.css') %>">
+		<link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'css/checkout.css') %>">
+               <link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'css/ng-styles.css') %>">
+	<% } %>
+	
+	<!--[if lt IE 9]> <script src="<%= session.getAbsoluteUrl('checkout', 'js/html5shiv.js') %>"></script> <![endif]-->
+	<!--[if lt IE 8]> <script src="<%= session.getAbsoluteUrl('checkout', 'js/json2.js') %>"></script> <![endif]-->
+
+	<script>
+	var SC = window.SC = { 
+		ENVIRONMENT: {
+			jsEnvironment: (typeof nsglobal === 'undefined') ? 'browser' : 'server'
+		}
+	,	isCrossOrigin: function() { return '<%= Environment.currentHostString %>' !== document.location.hostname; }
+	,	isPageGenerator: function() { return typeof nsglobal !== 'undefined'; }
+	,	getSessionInfo: function(key)
+		{
+			var session = SC.SESSION || SC.DEFAULT_SESSION || {};
+			return (key) ? session[key] : session;
+		}
+	};
+	</script>
+</head>
+<body>
+	<noscript>
+		<div class="alert alert-error alert-noscript">
+			<strong>Javascript is disabled on your browser.</strong><br>
+			To view this site, you must enable JavaScript or upgrade to a JavaScript-capable browser.
+		</div>
+	</noscript>
+	<div id="main"></div>
+	<script src="<%= session.getAbsoluteUrl('shopping', 'sc.environment.ssp?lang=' + Language + '&cur=' + Currency) %>"></script>
+	<% if (Error) { %>
+		<script>SC.ENVIRONMENT.contextError = <%= JSON.stringify(Error) %>;</script>
+	<% } %>
+	<script src="<%= session.getAbsoluteUrl('shopping', 'js/Application-01537a9c36c3.js') %>"></script>
+	<script src="<%= session.getAbsoluteUrl('shopping', 'templates/Templates-0159b751e5d8.js') %>"></script>
+	<script>
+
+		var Checkout = SC.Application('Checkout')
+
+		if (!window.location.hash && !_.parseUrlOptions(location.search).fragment)
+		{
+			window.location.hash = 'cart';
+		}
+
+		_.each(Checkout.Configuration.modules, function(module, index)
+		{
+			if (module === 'Cart' || module[0] === 'Cart')
+			{
+				if (_.isObject(module[1]))
+				{
+					module[1].startRouter = true;
+				}
+				else
+				{
+					Checkout.Configuration.modules[index] = ['Cart', {startRouter: true}];
+				}
+			}
+		});
+
+		Checkout.Configuration.currentTouchpoint = 'viewcart';
+		Checkout.Configuration.startCheckoutWizard = false;
+
+	</script>
+<% if (typeof(release_metadata) != 'undefined') { %>
+<!-- <%= JSON.stringify(release_metadata) %> -->
+<% } %>
+</body>
+</html>

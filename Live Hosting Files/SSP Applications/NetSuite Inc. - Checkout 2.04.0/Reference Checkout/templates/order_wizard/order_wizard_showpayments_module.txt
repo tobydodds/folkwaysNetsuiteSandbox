@@ -1,0 +1,62 @@
+<div class="row-fluid">
+	<div class="span6 wizard-showpayments-billing-address">
+		<h4 class="section-header">
+			<%=_('Billing Address').translate()%>
+		</h4>
+		<%
+			var billing_address = view.model.get('billaddress') ?
+					view.profile.get('addresses').get(view.model.get('billaddress')) :
+					null;
+		%>
+		<% if (billing_address) { %>
+			<%= address(billing_address, {
+				hideActions: true
+			,	hideDefaults: true
+			,	manage: 'billaddress'
+			}) %>
+		<% } else { %>
+			<a data-action="edit-module" href="<%- view.options.edit_url_billing %>?force=true">
+				<%= _('Please select a valid billing address').translate() %>
+			</a>
+		<% } %>
+		<% if (billing_address && view.options.edit_url_address) { %>
+			<a data-action="edit-module" href="<%- view.options.edit_url_address %>?force=true">
+				<%= _('Edit').translate() %>
+			</a>
+		<% } %>
+	</div>
+	<%
+		var giftcertificates = view.getGiftCertificates()
+		,	paymentmethods = view.getPaymentmethods();
+	%>
+	<div class="span6 wizard-showpayments-billing-payment-method">
+		<% if (giftcertificates.length || paymentmethods.length || !view.wizard.hidePayment()) {%>
+			<h4 class="section-header">
+				<%= _('Payment Type').translate() %>
+			</h4>
+			<div class="payment-methods-summary">
+				<% _.each(paymentmethods, function (paymentmethod) { %>
+					<%= SC.macros.formatPaymentMethod(paymentmethod, view.application.getConfig('creditCardIcons')) %>
+				<% }); %>
+				<% if (giftcertificates.length) { %>
+					<br>
+					<b><%= _('Gift Certificates').translate() %></b><br>
+					<% _.each(giftcertificates, function (paymentmethod) { %>
+						<%= SC.macros.formatPaymentMethod(paymentmethod) %>
+						<br>
+					<% }); %>
+				<% } %>
+				<% if (view.profile.get('isGuest') === 'T') { %>
+					<div>
+						<h5><%- view.profile.get('email') %></h5>
+					</div>
+				<% } %>
+			</div>
+			<% if (view.options.edit_url_billing) { %>
+				<a data-action="edit-module" href="<%- view.options.edit_url_billing %>?force=true">
+					<%= _('Edit').translate() %>
+				</a>
+			<% } %>
+		<% } %>
+	</div>
+</div>

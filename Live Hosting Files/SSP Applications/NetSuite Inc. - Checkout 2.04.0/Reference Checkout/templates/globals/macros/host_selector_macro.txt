@@ -1,0 +1,23 @@
+<% registerMacro('hostSelector', function (hosts, current, by_param) { %>
+<% if (hosts && hosts.length > 1) { %>
+<div class="input-prepend">
+	<span class="add-on">
+		<i class="icon-globe"></i>
+	</span>
+
+	<select data-toggle= <%= by_param ? 'language-selector' : 'host-selector' %> class="input-medium">
+	<% _.each(hosts, function(host) { %>
+		<% if (host.languages && host.languages.length) { %>
+			<optgroup label="<%- host.title %>">
+			<% _.each(host.languages, function(language) { %>
+				<option value="<%- language.host %>" <%= by_param && language.locale === current ? 'selected' : language.host === current ? 'selected' : '' %>>
+					<%= language.title || language.name %>
+				</option>
+			<%})%>
+			</optgroup>
+		<% } %>
+	<% }) %>
+	</select>
+</div>
+<% } %>
+<% }) %>

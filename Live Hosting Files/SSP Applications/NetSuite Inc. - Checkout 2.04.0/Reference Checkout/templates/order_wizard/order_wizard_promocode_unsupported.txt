@@ -1,0 +1,11 @@
+<div data-type="promocode-unsupported-warning-container" class="promocode-unsupported multishipto-package">
+
+	<p>
+	<%= view.msg %>
+	</p>
+
+	<div data-type="action-buttons-container" class="buttons-container">
+		<button class="btn btn-primary btn-large btn-continue" data-action="continue"><%= _('Continue').translate() %></button>
+		<button type="button" class="btn btn-large" data-dismiss="modal" data-type="cancel"><%= _('Cancel').translate() %></button>
+	</div>
+</div>

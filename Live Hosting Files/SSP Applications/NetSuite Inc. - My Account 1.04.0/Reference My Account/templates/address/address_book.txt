@@ -1,0 +1,23 @@
+<%
+	var defaults = _.compact( _.uniq( [ view.collection.where({ defaultbilling: 'T' })[0], view.collection.where({ defaultshipping: 'T' })[0] ] ) )
+	,	other_addresses = view.collection.where({ defaultbilling: 'F', defaultshipping: 'F' });
+%>
+
+<section>
+	<h3 class="no-margin-top"><%= view.page_header %></h3>
+
+	<a href="/" class="back-btn"><%= _('&lt; Back to Account').translate() %></a>
+
+	<hr class="divider-small">
+	<p><a class="btn btn-link add-new-address" href="/addressbook/new" data-toggle="show-in-modal"><%= _('Add New Address').translate() %></a></p>
+	<% if ( defaults.length ) { %>
+		<div class="default-addresses">
+			<%= displayInRows(defaults, SC.macros['address'], view.options.application.getConfig('itemsPerRow')) %>
+			<hr class="divider-small">
+		</div>
+	<% } %>
+
+	<div class="other-addresses">
+		<%= displayInRows(other_addresses, SC.macros['address'], view.options.application.getConfig('itemsPerRow')) %>
+	</div>
+</section>

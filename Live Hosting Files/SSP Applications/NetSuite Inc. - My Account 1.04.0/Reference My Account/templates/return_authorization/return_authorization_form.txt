@@ -1,0 +1,84 @@
+<%
+	var application = view.application
+	,	created_from = view.createdFrom
+	,	created_from_url = view.getLinkedRecordUrl()
+	,	invalid_lines = created_from.get('invalidLines')
+	,	active_lines_length = view.getActiveLines().length;
+%>
+<h3 class=""><%= view.page_header %></h3>
+<a href="/" class="back-btn"><%= _('&lt; Back to Account').translate() %></a>
+<hr class="divider-small">
+<div data-type="alert-placeholder"></div>
+<section class="">
+	<form class="">
+		<fieldset>
+			<legend style="border-bottom: none;"><%= _('Select items to return').translate() %></legend>
+			<input type="hidden" name="id" value="<%= created_from.get('internalid') %>">
+
+			<% if (created_from.get('type') === 'salesorder') { %>
+				<p><%= _('From <a href="$(0)">Order #$(1)</a>').translate(created_from_url, created_from.get('order_number')) %></p>
+				<input type="hidden" name="type" value="salesorder">
+			<% } else { %>
+				<p><%= _('From <a href="$(0)">Invoice #$(1)</a>').translate(created_from_url, created_from.get('order_number')) %></p>
+				<input type="hidden" name="type" value="invoice">
+			<% } %>
+
+			<div data-type="list-header-placeholder"></div>
+			<% view.getLines().each(function (line) { %>
+				<%= itemDetailsEditable({
+						application: application
+					,	line: line
+					,	isSelectable: true
+					,	detailsMacro: view.getDetailsMacro(line)
+					,	actionsMacro: view.getActionsMacro(line)
+					}) %>
+			<% }) %>
+			<br>
+			<p class="text-light">
+				<%= _('<b>$(0)</b> items selected').translate(active_lines_length) %> <br>
+				<%= _('<b>$(0)</b> in total to return').translate(view.getTotalItemsToReturn()) %>
+			</p>
+		</fieldset>
+
+		<% if (invalid_lines.length) { %>
+		<div class="control-group" data-type="accordion">
+			<div class="well-secundary" data-action="items-expander">
+				<div class="well-header">
+					<%= _('Items from original order not eligible for return ($(0))').translate(invalid_lines.length) %>
+					<a href="#" class="pull-right"><i class="icon-plus"></i></a>
+				</div>
+			</div>
+			<div data-content="items-body" style="display: none;">
+				<div class="row-fluid nav-tabs hide-phone">
+					<div class="span11 offset1 popover-content popover-heading"><%= _('Item').translate() %></div>
+				</div>
+				<%	invalid_lines.each(function (line, index) { %>
+					<%
+						var item = line.get('item')
+						,	options = line.get('options');
+					%>
+					<div class="row-fluid nav-tabs item-<%= item.get('internalid') %>">
+						<div class="span1 item-image hide-phone"><img src="<%= application.resizeImage(item.get('_thumbnail').url, 'tinythumb') %>" alt="<%= item.get('_thumbnail').altimagetext %>"></div>
+						<div class="span11 popover-content">
+							<p class="item-displayname"><%= item.get('_name') %></p>
+							<p class="product-price text-highlight"><%= line.get('rate_formatted') %></p>
+							<p class="text-light"><%= _('SKU: #$(0)').translate(item.get('_sku')) %></p>
+							<% if (options && options.length) { %>
+								<div class="text-light"><%= SC.macros.showItemOptions(options) %></div>
+							<% } %>
+						</div>
+					</div>
+				<% }) %>
+			</div>
+		</div>
+		<% } %>
+
+		<fieldset>
+			<label class="h4" for="comment"><%= _('Add a comment (optional)').translate() %></label>
+			<textarea name="comments" id="comment" class="input-xxlarge" rows="4"><%= view.comments || '' %></textarea>
+		</fieldset>
+		<div class="form-actions form-actions-left">
+			<button type="submit" class="btn btn-primary" <%= !active_lines_length ? 'disabled' : '' %>><%= _('Submit request').translate() %></button>
+		</div>
+	</form>
+</section>

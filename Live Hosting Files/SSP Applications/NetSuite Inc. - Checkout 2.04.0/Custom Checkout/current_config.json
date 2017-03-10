@@ -1,0 +1,92 @@
+{
+    "GENERATE": [
+        {
+            "Combined-file": "Application.js",
+            "Input-files": [
+                "utils/BootUtilities.js",
+                "utils/json2.js",
+                "libs/require.js",
+                "libs/underscore.js",
+                "libs/jquery.js",
+                "libs/backbone.js",
+                "libs/backbone.validation.js",
+                "libs/bootstrap.js",
+                "src/core/Main.js",
+                "src/core/Utils.js",
+                "src/core/ApplicationSkeleton.js",
+                "src/app/modules/BackToTop/*.js",
+                "src/core/extras/*.js",
+                "src/app/Application.js",
+                "src/app/Configuration.js",
+                "src/app/ItemsKeyMapping.js",
+                "src/app/modules/Account/*.js",
+                "src/app/modules/Address/*.js",
+                "src/app/modules/AjaxRequestsKiller/*.js",
+                "src/app/modules/Cart/*.js",
+                "src/app/modules/Content/*.js",
+                "src/app/modules/CreditCard/*.js",
+                "src/app/modules/ErrorManagement/*.js",
+                "src/app/modules/GoogleAnalytics/*.js",
+                "src/app/modules/GoogleUniversalAnalytics/*.js",
+                "src/app/modules/GoogleAdWords/*.js",
+                "src/app/modules/Facets/*.js",
+                "src/app/modules/ItemDetails/*.js",
+                "src/app/modules/ItemOptionsHelper/*.js",
+                "src/app/modules/LoginRegister/*.js",
+                "src/app/modules/Merchandising/*.js",
+                "src/app/modules/MultiCurrencySupport/*.js",
+                "src/app/modules/MultiHostSupport/*.js",
+                "src/app/modules/NavigationHelper/*.js",
+                "src/app/modules/Order/*.js",
+                "src/app/modules/OrderWizard/*.js",
+                "src/app/modules/Profile/*.js",
+                "src/app/modules/SiteSearch/*.js",
+                "src/app/modules/Session/*.js",
+                "src/app/modules/UrlHelper/*.js",
+                "src/app/modules/User/*.js",
+                "src/app/modules/Wizard/*.js",
+                "src/app/modules/CheckoutSkipLogin/*.js",
+                "Starter.js"
+            ],
+            "Method": "Minify",
+            "Referring-files": "../*.ssp",
+            "Version": "2",
+            "target": "js/combiner.config",
+            "type": "combiner.config"
+        },
+        {
+            "Combined-file": "Templates.js",
+            "Input-files": [
+                "*.txt",
+                "content/*.txt",
+                "globals/*.txt",
+                "header/macros/*.txt",
+                "footer/macros/*.txt",
+                "item_details/*.txt",
+                "shopping_cart/*.txt",
+                "wizard/*.txt",
+                "order_wizard/*.txt",
+                "creditcard/*.txt",
+                "address/*.txt",
+                "login_register/*.txt",
+                "merchandising/macros/*.txt"
+            ],
+            "Referring-files": "../*.ssp",
+            "Variable-name": "SC.templates",
+            "Version": "2",
+            "target": "templates/templates.config",
+            "type": "templates.config"
+        },
+        {
+            "Combined-file": "Styles.css",
+            "Input-files": [
+                "styles.css"
+            ],
+            "Method": "Append",
+            "Referring-files": "../../*.ssp",
+            "Version": "2",
+            "target": "skins/standard/combiner.config",
+            "type": "combiner.config"
+        }
+    ]
+}

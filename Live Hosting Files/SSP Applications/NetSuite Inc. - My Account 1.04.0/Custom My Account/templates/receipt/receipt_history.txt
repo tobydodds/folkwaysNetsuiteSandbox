@@ -1,0 +1,67 @@
+<section class="receipts-list">
+	<header>
+		<h3 class="no-margin-top"><%= view.page_header %></h3>
+		
+		<a href="/" class="back-btn"><%= _('&lt; Back to Account').translate() %></a>
+		<hr class="divider-small">	
+	</header>
+
+	<div class="row-fluid">
+		<% if ( view.collection.models.length ) { %>
+			<div class="list-sub-header hidden-phone">
+				<div class="row-fluid">
+					<div class="span3">
+						<span><%= _('Receipt No.').translate() %></span>
+					</div>
+					<div class="span3">
+						<span><%= _('Date').translate() %></span>
+					</div>
+					<div class="span3">
+						<span><%= _('Amount').translate() %></span>
+					</div>
+					<div class="span3 responsive-align">
+						<span><%= _('Status').translate() %></span>
+					</div>
+				</div>
+			</div>
+
+			<% _.each(view.collection.models, function (receipt, index) { %>
+				<%  var id = receipt.get('internalid')
+				,	order_number = receipt.get('order_number')
+				,	status = receipt.get('status'); %>
+				
+					<a href="#" class="list-row" data-touchpoint="customercenter" data-id="<%= id %>" data-hashtag="/receiptshistory/view/<%= id %>">
+						<div class="row-fluid">
+							<div class="span3" quote-id="<%= id %>">
+								<span class="list-row-text id-record">
+									<span class="list-row-text-bigger id-record"><%= _('Receipt #$(0)').translate(order_number) %></span>
+								</span>
+							</div>
+							<div class="span3 date-start">
+								<span class="list-row-text">
+									<span class="visible-phone list-row-text-info"><%= _('Receipt date:').translate() %> </span>
+									<%= _('$(0)').translate(receipt.get('date')) %>
+								</span>
+							</div>
+							<div class="span3">
+								<span class="list-row-text">
+									<span class="visible-phone list-row-text-info"><%= _('Amount:').translate() %> </span>
+									<span class="amount"><%= _('$(0)').translate(receipt.get('summary').total_formatted) %></span>
+								</span>
+							</div>
+							<div class="span3 responsive-align">
+								<span class="list-row-text status">
+									<%= _('$(0)').translate(_.isObject(status) ? status.name : status) %>
+								</span>
+							</div>
+							<div class="visible-phone span1 pull-right text-right">
+								<i class="icon-chevron-right"></i>
+							</div>
+						</div>
+					</a>
+			<% }); %>
+		<% } else { %>
+			<p class="list-empty"><%= _('No receipts were found').translate() %></p>
+		<% } %>		
+	</div>
+</section>

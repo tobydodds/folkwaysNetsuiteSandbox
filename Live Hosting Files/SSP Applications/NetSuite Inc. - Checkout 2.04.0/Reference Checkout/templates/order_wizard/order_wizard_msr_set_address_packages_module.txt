@@ -1,0 +1,115 @@
+<%
+	var addresses = view.getValidAddresses()
+	,	unset_lines = view.wizard.model.getUnsetLines()
+	,	current_selected_address_id = view.getSelectedAddressId()
+	,	all_items_length = unset_lines.length
+	,	selected_items_length = view.getSelectedItemsLength()
+	,	are_all_items_selected = selected_items_length === all_items_length
+	,	createShipmentLabel = view.createShipmentLabel
+	,	createShipmentEnabled = view.createShipmentEnabled
+	,	item_quantity_macro;
+%>
+<div>
+	<% if (unset_lines.length) { %>
+		<div class="row-fluid select-shipping-header-row" >
+			<div class="span12">
+				<h4 class="section-sub-tile-header"> <%= _('Select shipping address').translate() %></h4>
+			</div>
+		</div>
+		<div class="row-fluid select-shipping-header-row" >
+			<div class="span9">
+				<select data-type="set-shipments-address-selector" class="multishipto-address-selector" >
+					<% _.each(addresses, function(address) { %>
+						<option value="<%= address.get('internalid') %>" <%= address.get('internalid') == current_selected_address_id ? 'selected' : '' %> >
+							<%= address.get('fullname') +" - "+ address.get('addr1') %>
+						</option>
+					<% }) %>
+				</select>
+			</div>
+			<div class="span3 text-right edit-address-link" data-type="edit-addresses">
+				<a href="#" > <%= _('Add / Edit Addresses').translate() %> </a>
+			</div>
+		</div>
+		<div class="row-fluid select-shipping-header-row" >
+			<div class="span12">
+				<h4 class="section-sub-tile-header"> <%= _('Select products for this address').translate() %></h4>
+			</div>
+		</div>
+		<div data-type="items-selection-control" class="items-remaining-list">
+			<div class="row-fluid nav-tabs">
+				<div class="clearfix multishipto-table-row-header">
+					<div class="span3" data-type="select-unselect-all">
+						<input type="checkbox" data-type="selectunselect-all-checkbox" <%= are_all_items_selected ? 'checked' : '' %> />
+						<label class="grey-color" style="display:inline;"> <%= are_all_items_selected ? _('Unselect all').translate() :  _('Select all (<span data-type="item-remaining-count">$(0)<span>)').translate(all_items_length) %> </label>
+					</div>
+					<div class="span3 grey-color hide-phone"><%= _('Product').translate() %></div>
+					<div class="span2 grey-color hide-phone"><%= _('Qty').translate() %></div>
+					<div class="span2 grey-color hide-phone"><%= _('Unit Price').translate() %></div>
+					<div class="span2 grey-color hide-phone text-center"><%= _('Amount').translate() %></div>
+				</div>
+			</div>
+
+			<div data-type="items-remaining-list">
+			<% _.each(unset_lines, function(line) { %>
+				<%
+					item_quantity_macro = (function (is_item_selected, quantity, item_id, current_quantity)
+					{
+						return function ()
+						{
+							return itemEditableQuantity({
+								isReadOnly: !is_item_selected
+							,	itemId: item_id
+							,	quantity: quantity
+							,	currentQuantity: current_quantity
+							});
+						};
+					})(line.get('check'), line.get('quantity'), line.id, line.get('splitquantity'));
+				%>
+				<%= itemDetailsRow({
+						application: view.wizard.application
+					,	showSelectable: true
+					,	quantityMacro: item_quantity_macro
+					,	line: line
+					,	itemClass: 'multishipto-item-table-row'
+					,	indexes: [
+							1 /*select*/
+						,	2 /*image*/
+						,	3 /*item*/
+						,	2 /*quantity*/
+						,	2 /*unit proce*/
+						,	2 /*amount*/]
+					}) %>
+			<% }) %>
+			</div>
+		</div>
+		<div data-type="module-footer">
+			<% if (selected_items_length) { %>
+				<div class="row-fluid select-shipping-header-row" >
+					<div class="span6">
+
+					<p class="grey-color;"><%= selected_items_length > 1 ?
+					_('The <span data-type="item-selected-count">$(0)</span> products you selected will be shipped to:').translate(selected_items_length) :
+					_('<span data-type="item-selected-count" class="hidden">$(0)</span>The product you selected will be shipped to:').translate(selected_items_length) %>
+					</p>
+
+					<div data-type="multishipto-address-selected" class="multishipto-address-selected" >
+						<%= address(
+							view.wizard.options.profile.get('addresses').get(current_selected_address_id)
+						,	{
+								hideActions: true
+							,	hideDefaults: true
+							,	manage: 'shipaddress'
+							}
+						) %>
+					</div>
+				</div>
+			<% } else { %>
+				<p class="grey-color" ><%= _('<span data-type="item-selected-count">$(0)</span> products selected').translate(selected_items_length) %><p>
+			<% } %>
+		</div>
+			<button data-type="create-shipments" class="btn btn-primary btn-large btn-createshipment" <%= createShipmentEnabled ? '' : 'disabled="disabled"' %> >
+				<%= createShipmentLabel %>
+			</button>
+		</div>
+	<% } %>
+</div>

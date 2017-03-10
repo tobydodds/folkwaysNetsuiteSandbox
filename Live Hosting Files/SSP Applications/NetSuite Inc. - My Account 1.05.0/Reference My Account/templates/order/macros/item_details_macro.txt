@@ -1,0 +1,90 @@
+<% registerMacro('itemDetails', function (line) { %>
+<%
+	var item = line.item
+	,	name = SC.macros.itemLinkName({item: item, showLinkeable: true})
+	,	url = item.get('_url');
+
+	line.format_options = _.map(line.options, function (option)
+	{
+		return option.id + '=' + option.value;
+	}).join(',');
+%>
+	<div class="row-item item-list-navigable product-details" data-item="<%= item.get('internalid') || ''%>">
+		<div class="item">
+			<div class="thumbnail item-image">
+				<% var item_image = line.application.resizeImage(item.get('_thumbnail').url, 'thumbnail') %>
+		 		<% if (line.type !== 'Discount') { %>
+					<img src="<%= item_image %>" class="accordion-image product-image" alt="<%= item.get('_thumbnail').altimagetext %>" data-toggle="false">
+				<% } %>
+			</div>
+			<div class="info">
+				<div class="details">
+					<p class="item-name"><%= name %></p>
+					<p class="item-price text-highlight"><%= line.price %></p>
+					<p>
+					<% if (line.type === 'Discount') { %>
+						<%= _('Discount').translate() %>
+					<% } else { %>
+						<%= _('<span class="text-light">SKU</span>: #<span class="item-sku">$(0)</span>').translate(item.get('_sku')) %>
+					<% } %>
+					</p>
+					<% if (line.options && line.options.length) { %>
+						<div>
+							<%= SC.macros.showItemOptions(line.options) %>
+						</div>
+					<% } %>
+					<% if (line.trandate) { %>
+						<p class="text-light"><%= _('Last purchased on $(0)').translate(line.trandate)%></p>
+					<% } %>
+					<!-- line.reorder indicate if the item is purchasabel, This property accepts 3 values, true when the items is purchasable, false when is our of stock, and undefined that means the items is not display in store -->
+					<% if (!_.isBoolean(line.reorder) && line.type !== 'Discount') {  %>
+						<p class="alert alert-warning"><%= _('This item is no longer available').translate() %></p>
+					<% } else if (!item.get('_isInStock') && item.get('_showOutOfStockMessage')) { %>
+						<p class="text-light"><%= SC.macros.itemDetailsStock(item.getStockInfo()) %></p>
+					<% } %>
+				</div>
+				<div class="summary">
+					<% 	if (line.type !== 'Discount') {
+
+							if(line.partial_quantity && line.partial_quantity > 0 && line.partial_quantity != line.quantity){ %>
+								<p><%= _('<span class="text-light">Quantity</span>: <span class="item-quantity">$(0) of $(1)</span>').translate(line.partial_quantity || 0, line.quantity || 0) %></p>
+							<% }
+							else{ %>
+								<p><%= _('<span class="text-light">Quantity</span>: <span class="item-quantity">$(0)</span>').translate(line.quantity || 0) %></p>
+							<% }
+						} %>
+
+					<% if (line.amount) { %>
+						<p>
+							<span class="text-light"><%= line.amount_label ? line.amount_label : _('Amount').translate() %>: </span>
+							<% if (line.discount) { %>
+								<span class="line-through text-light non-discounted-amount">
+									<%= line.amount ? _.formatCurrency(line.amount) : '&nbsp;' %>
+								</span>
+								<span class="item-amount">
+									<%= line.amount ?  _.formatCurrency(line.total) : '&nbsp;' %>
+								</span>
+							<% } else { %>
+								<span class="item-amount">
+									<%= line.amount ? _.formatCurrency(line.amount) : '&nbsp;' %>
+								</span>
+							<% } %>
+						</p>
+					<% } %>
+				</div>
+			</div>
+		</div>
+		<div class="actions control-group">
+			<% if (line.reorder && !line.is_return_authorization) { %>
+				<% if (item.get("itemtype") != 'GiftCert') { %>
+					<button class="btn btn-link-box btn-link pull-right" data-re-order-item-link="<%= line.id %>" data-item-id="<%= item.get('_id') %>" data-item-quantity="<%= line.quantity %>" data-partial-quantity="<%= line.partial_quantity %>" data-parent-id="<%= item.get('parent_internalid') %>" data-item-options="<%= line.format_options %>">
+						<%= line.quantity > 1 ? _('Reorder these Items').translate() : _('Reorder this Item').translate() %>
+					</button>
+				<% } else { %>
+					<a data-giftcard-item-link="<%= item.get('_url') %>" data-giftcard-item-name="<%= item.get('_sku') %>" data-parent-id="<%= item.get('parent_internalid') %>" data-item-options="<%= line.format_options %>" href="#"></a>
+				<% } %>
+			<% } %>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+<% }) %>

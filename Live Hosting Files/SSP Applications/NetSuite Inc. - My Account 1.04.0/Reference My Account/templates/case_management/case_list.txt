@@ -1,0 +1,94 @@
+<% var collection = view.collection; %>
+<section class="case-management">
+	<header>
+		<h3>
+			<%= view.page_header %>			
+			<div class="pull-right hidden-phone">
+				<a class="pull-right btn btn-expanded btn-primary" href="#" data-touchpoint="customercenter" data-hashtag="#/newcase">
+					<%= _('Create new case').translate() %>
+				</a>
+			</div>
+		</h3>		
+	</header>	
+	
+	<a href="/" class="back-btn">
+		<%= _('&lt; Back to Account').translate() %>
+	</a>
+
+	<a class="visible-phone btn btn-expanded btn-primary" href="#" data-touchpoint="customercenter" data-hashtag="#/newcase">
+		<%= _('Create new case').translate() %>
+	</a>
+
+	<hr class="divider-small">
+	
+	<div data-confirm-message class="confirm-message"></div>
+
+	<div data-type="list-header-placeholder"></div>
+
+	<div class="row-fluid case-table">
+	<% if (collection.length) { %>
+		<div class="list-sub-header hidden-phone">
+			<div class="row-fluid">
+				<div class="span2">
+					<span><%= _('Case No.').translate() %></span>
+				</div>
+				<div class="span4">
+					<span><%= _('Subject').translate() %></span>
+				</div>
+				<div class="span2">
+					<span><%= _('Creation date').translate() %></span>
+				</div>
+				<div class="span2">
+					<span><%= _('Last Message').translate() %></span>
+				</div>
+				<div class="span2 responsive-align">
+					<span><%= _('Status').translate() %></span>
+				</div>
+			</div>
+		</div>
+
+		<% collection.each(function (the_case) { %>
+			<% var id = the_case.get('internalid')
+			,	case_number = the_case.get('caseNumber') %>
+
+			<a href="#" class="list-row" data-touchpoint="customercenter" data-id="<%= id %>" data-hashtag="#/cases/<%= id %>" data-case-number="<%= case_number %>">
+				<div class="row-fluid">
+					<div class="span2">
+						<span class="list-row-text id-record">
+							<span class="list-row-text-bigger id-record case-number"><%= _('Case #$(0)').translate(case_number) %></span>
+						</span>
+					</div>
+					<div class="span4">
+						<span class="list-row-text">
+							<span class="visible-phone list-row-text-info"><%= _('Subject:').translate() %> </span>
+							<span class="case-subject"><%= _('$(0)').translate(the_case.get('title')) %></span>
+						</span>
+					</div>
+					<div class="span2">
+						<span class="list-row-text">
+							<span class="visible-phone list-row-text-info"><%= _('Creation Date:').translate() %> </span>
+							<span class="case-creation-date"><%= _('$(0)').translate(the_case.get('createdDate').split(' ')[0]) %></span>
+						</span>
+					</div>
+					<div class="span2">
+						<span class="list-row-text">
+							<span class="visible-phone list-row-text-info"><%= _('Last Message:').translate() %> </span>
+							<span class="case-last-message-date"><%= _('$(0)').translate(the_case.get('lastMessageDate').split(' ')[0]) %></span>
+						</span>
+					</div>
+					<div class="span2 responsive-align">
+						<span class="list-row-text">							
+							<span class="case-status status"><%= _('$(0)').translate(the_case.get('status').name) %></span>
+						</span>
+					</div>
+					<div class="visible-phone span1 pull-right text-right">
+						<i class="icon-chevron-right"></i>
+					</div>					
+				</div>
+			</a>
+		<% }); %>
+	<% } else if (!view.isLoading) { %>
+		<p class="list-empty"><%= _('No cases were found').translate() %></p>
+	<% } %>
+	</div>
+</section>

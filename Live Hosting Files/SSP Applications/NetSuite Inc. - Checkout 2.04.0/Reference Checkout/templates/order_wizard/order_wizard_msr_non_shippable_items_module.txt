@@ -1,0 +1,54 @@
+<%
+	var	lines_not_shippable = view.getLinesNotShippable()
+	,	application = view.wizard.application;
+%>
+<% if (lines_not_shippable && lines_not_shippable.length) { %>
+	<div class="row-fluid control-group" data-type="accordion" id="nonshippable-items-accordion">
+		<div class="well-secundary" data-action="items-expander">
+			<div class="well-header">
+				<%= _('Items that don\'t require shipping <span class="items-count">($(0))</span>').translate(lines_not_shippable.length) %>
+					<a href="#" class="pull-right"><i class="icon-plus"></i></a>
+			</div>
+		</div>
+		<div data-content="items-body" style="display: none;" id="accordion-body-nonshipable-items">
+
+			<div class="row-fluid nav-tabs hide-phone">
+				<div class="span2">&nbsp;</div>
+				<div class="span4 grey-color item-title"><%= _('Item').translate() %></div>
+				<div class="span2 grey-color qty-title"><%= _('Qty').translate() %></div>
+				<div class="span2 grey-color unit-price-title"><%= _('Unit Price').translate() %></div>
+				<div class="span2 grey-color text-center amount-title"><%= _('Amount').translate() %></div>
+			</div>
+
+			<% _.each(lines_not_shippable, function (line) { %>
+				<%
+					item_quantity_macro = (function (is_item_selected, quantity, item_id, current_quantity)
+					{
+						return function ()
+						{
+							return itemEditableQuantity({
+								isReadOnly: !is_item_selected
+							,	itemId: item_id
+							,	quantity: quantity
+							,	currentQuantity: current_quantity
+							});
+						};
+					})(line.get('check'), line.get('quantity'), line.id, line.get('splitquantity'));
+				%>
+				<%= itemDetailsRow({
+						line: line
+					,	application: application
+					,	itemClass: 'multishipto-item-table-row popover-content'
+					,	quantityMacro: item_quantity_macro
+					,	showSelectable: false
+					,	showActions: false
+					,	indexes: [
+						,	4 /*title*/
+						,	2 /*quantity*/
+						,	2 /*unit price*/
+						,	2 /*amount*/]
+					}) %>
+			<% }) %>
+		</div>
+	</div>
+<% } %>

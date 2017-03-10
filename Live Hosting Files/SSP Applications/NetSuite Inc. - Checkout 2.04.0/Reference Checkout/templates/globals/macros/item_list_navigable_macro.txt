@@ -1,0 +1,123 @@
+<% registerMacro('itemListNavigable', function (options) { %>
+<%
+	var macros = SC.macros
+	,	is_advanced = SC.ENVIRONMENT.siteType !== 'STANDARD'
+
+	,	view = options.view
+	,	application = view.application
+
+	,	line = options.line
+	,	line_id = line.get('internalid')
+
+	,	item = line.get('item')
+	,	item_id = item.get('internalid')
+	
+	,	stock_info = item.getStockInfo()
+	,	thumbnail = item.get('_thumbnail')
+
+	,	link_attributes = _.getItemLinkAttributes(item);
+%>
+<article id="<%- line_id %>" class="item-list-navigable <%= line_id %>" data-item-id="<%= item_id %>">
+	<div class="item">
+		<div class="thumbnail">
+		<% if (options.showActions) { %>
+			<a <%= link_attributes %>>
+				<img src="<%- application.resizeImage(thumbnail.url, 'thumbnail') %>" alt="<%- thumbnail.altimagetext %>">			
+			</a>
+		<% } else { %>
+			<img src="<%- application.resizeImage(thumbnail.url, 'thumbnail') %>" alt="<%- thumbnail.altimagetext %>">
+		<% } %>
+		</div>
+		<div class="info">
+			<div class="details">
+				<div class="name">
+				<% if (options.showActions) { %>
+					<a <%= link_attributes %>>
+						<%= item.get('_name') %>
+					</a>
+				<% } else { %>
+					<%= item.get('_name') %>
+				<% } %>
+				</div>
+				<div class="price">
+					<%= macros.showItemPrice(line.getPrice(), stock_info.isInStock) %>
+				</div>
+				<div class="sku">
+					<%= _('<span class="text-light">SKU:</span> #$(0)').translate(item.get('_sku')) %>
+				</div>
+				<div class="item-options">
+					<%= item.renderAllOptionSelected() %>
+				</div>
+			</div>
+			<div class="summary">
+				<div class="quantity">
+				<% if (options.showActions) { %>
+					<form action="#" data-action="update-quantity">
+						<input type="hidden" name="internalid" id="update-internalid-<%= line_id %>" class="update-internalid-<%= line_id %>" value="<%- line_id %>">
+						<label for="quantity-<%= line_id %>">
+							<div class="quantity"><%= _('Quantity:').translate() %></div>
+							<% if (item.get('_itemType') !== 'GiftCert') { %>
+								<input type="number" name="quantity" id="quantity-<%= line_id %>" class="input-mini quantity-<%= line_id %>" value="<%- line.get('quantity') %>" min="1">
+							<% } else { %>
+								<input type="hidden" name="quantity" id="quantity-<%= line_id %>" value="1">
+							<% } %>
+						</label>
+					</form>
+				<% } else { %>
+					<%= _('Qty: $(0)').translate(line.get('quantity')) %>
+				<% } %>
+				</div>
+				<div class="amount">
+					<%= _('<span class="amount-label">Amount:</span> $(0)').translate(line.get('total_formatted')) %>
+
+					<% if (line.get('amount') > line.get('total')) {%>
+						<small class="muted crossed"><%= line.get('amount_formatted') %></small>
+					<% } %>
+				</div>
+				<div class="stock">
+					<%= macros.itemDetailsStock(stock_info) %>
+				</div>
+			</div>
+		</div>
+		<div class="alert-placeholder" data-type="alert-placeholder">
+		<% if (item.get('_cartCustomAlert')) {%>
+			<div class="alert alert-<%= item.get('_cartCustomAlertType') || 'info' %>">
+				<%= item.get('_cartCustomAlert') %>
+			</div>
+		<% } %>
+		</div>
+	</div>
+	<% if (options.showActions) { %>
+	<div class="actions">		
+		<% if (is_advanced) { %>
+			<div class="btn-group">	
+				<a class="btn edit" href="<%- _(item.get('_editUrl')).fixUrl() %>" data-toggle="show-in-modal">
+					<%= _('Edit').translate() %>
+				</a>
+				<button type="button" class="btn dropdown-toggle item-actions-dropdown" data-toggle="dropdown">
+			    <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+				    <li>
+						<button class="remove" data-action="remove-item" data-internalid="<%- line.get('internalid') %>">
+							<%= _('Remove').translate() %>
+						</button>
+					</li>
+				    <li>
+						<% if (is_advanced && application.ProductListModule && application.ProductListModule.isProductListEnabled() && application.name.toLowerCase() === 'shopping') { %>
+							<button class="saveforlater" data-action="save-for-later-item" data-internalid="<%- line.get('internalid') %>">
+								<%= _('Save for Later').translate() %>
+							</button>
+						<% } %>
+					</li>
+				</ul>
+			</div>
+		<% } else { %>
+			<button class="btn remove" data-action="remove-item" data-internalid="<%- line.get('internalid') %>">
+				<%= _('Remove').translate() %>
+			</button>
+		<% } %>	
+	</div>
+	<% } %>
+</article>
+<% }) %>

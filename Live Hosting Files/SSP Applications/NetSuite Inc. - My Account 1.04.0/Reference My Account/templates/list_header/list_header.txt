@@ -1,0 +1,98 @@
+<% var collection = view.collection; %>
+<!-- Todo: Each component should be a macro -->
+<div class="list-header text-right clearfix <%= view.classes || '' %>">
+	<% if (view.displays) { %>
+		<div class="item-listing-display pull-left">
+			<span class="btn-group">
+				<% _(view.displays).each(function (option) { %>
+				<a href="<%- _(view.displayer(option.id)).fixUrl() %>"  class="btn <%= view.selectedDisplay.id === option.id ? 'active' : '' %>"  title="<%= option.name %>">
+					<i class="<%= option.icon %>"></i>
+				</a>
+				<% }); %>
+			</span>
+		</div>
+	<% } %>
+
+	<% if (view.rangeFilter) { %>
+		<%
+			var selected_range = view.selectedRange
+			,	filter_range_options = view.rangeFilterOptions
+			,	from_min = filter_range_options.fromMin ? 'min="' + filter_range_options.fromMin + '"' : ''
+			,	from_max = filter_range_options.fromMax ? 'max="' + filter_range_options.fromMax + '"' : ''
+			,	to_min = filter_range_options.toMin ? 'min="' + filter_range_options.toMin + '"' : ''
+			,	to_max = filter_range_options.toMax ? 'max="' + filter_range_options.toMax + '"' : '';
+		%>
+		<label class="pull-left" for="from"><%= _('From').translate() %>
+			<input class="input-date" id="from" pattern="(\d){4}-(\d){1,2}-(\d){1,2}" placeholder="<%= _('YYYY-MM-DD').translate() %>" name="from" type="<%= view.rangeFilter %>" <%= from_min %> <%= from_max %> value="<%= selected_range.from %>" data-action="range-filter">
+		</label>
+		<label class="pull-left" for="to"><%= _('to').translate() %>
+			<input class="input-date" id="to" pattern="(\d){4}-(\d){1,2}-(\d){1,2}" placeholder="<%= _('YYYY-MM-DD').translate() %>" name="to" type="<%= view.rangeFilter %>" <%= to_min %> <%= to_max %> value="<%= selected_range.to %>" data-action="range-filter">
+		</label>
+	<% } %>
+
+	<% if (view.filters) { %>
+		<% var selected_filter = _.isFunction(view.selectedFilter.value) ? view.selectedFilter.value.apply(view.view) : view.selectedFilter.value  %>
+		<select name="filter" id="" class="list-header-filter" data-action="filter">
+		<% _.each(view.filters, function (item) { %>
+			<% var item_value = _.isFunction(item.value) ? item.value.apply(view.view) : item.value %>
+			<option value="<%= item_value %>"  data-permissions="<%= item.permission %>" <%= selected_filter === item_value ? 'selected' : '' %>><%= item.name %></option>
+		<% }) %>
+		</select>
+	<% } %>
+
+	<% if (view.sorts) { %>
+		<% var selected_sort = view.selectedSort.value %>
+		<select name="sort" id="" class="list-header-sort" data-action="sort">
+		<% _.each(view.sorts, function (item) { %>
+			<option value="<%= item.value %>" data-permissions=="<%= item.permission %>" <%= selected_sort === item.value ? 'selected' : '' %>><%= item.name %></option>
+		<% }) %>
+		</select>
+
+		<button class="btn list-header-sort-btn" data-action="toggle-sort">
+			<i class="icon-arrow-up pull-left <%= view.order > 0 ? 'icon-white' : '' %>"></i>
+			<i class="icon-arrow-down pull-left <%= view.order < 0 ? 'icon-white' : '' %>"></i>
+		</button>
+	<% } %>
+
+	<% if (view.selectable && collection.length > 1) { %>
+		<%
+			var unselected = collection.filter(function (inv)
+			{
+				return !inv.get('checked');
+			});
+		%>
+		<label class="pull-left v-center" for="select-all">
+			<% if (unselected.length) { %>
+				<input type="checkbox" name="select-all" id="select-all" data-action="select-all"> <%= _('Select All ($(0))').translate(collection.length) %>
+			<% } else { %>
+				<input type="checkbox" name="select-all" id="select-all" data-action="unselect-all" checked> <%= _('Unselect All ($(0))').translate(collection.length) %>
+			<% } %>
+		</label>
+	<% } %>
+</div>
+
+<% if (collection.totalRecordsFound && collection.recordsPerPage) { %>
+	<%
+		var pagination_result = pagination(_.extend({},
+			view.options.application.getConfig('defaultPaginationSettings'),
+			{
+				currentPage: view.page
+			,	totalPages: Math.ceil(collection.totalRecordsFound / collection.recordsPerPage)
+			,	extraClass: 'pagination-small pull-right'
+			,	pager: view.pager
+		}));
+	%>
+	<div class="clearfix">
+		<% if (view.options.showCurrentPage) {  %>
+		<%= showingCurrent({
+				current_page: view.page
+			,	items_per_page: view.collection.recordsPerPage
+	 		,	total_items: view.collection.totalRecordsFound
+			,	total_pages: Math.ceil(view.collection.totalRecordsFound / view.collection.recordsPerPage)
+			,	extraClass: 'pull-left'
+		}) %>
+		<% } %>
+
+		<%= pagination_result %>
+	</div>
+<% } %>

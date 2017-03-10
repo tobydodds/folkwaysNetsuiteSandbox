@@ -1,0 +1,32 @@
+{
+	"predef": [
+		"_"
+	,	"session"
+	,	"settings"
+	,	"Backbone"
+	,	"nlobjError"
+	,	"Application"
+	,	"notFoundError"
+	,	"forbiddenError"
+	,	"nlapiCreateError"
+	,	"nlapiLogExecution"
+	,	"unauthorizedError"
+	,	"methodNotAllowedError"
+	,	"isLoggedIn"
+	]
+,	"forin": false
+,	"noarg": true
+,	"noempty": true
+,	"eqeqeq": true
+,	"bitwise": false
+,	"strict": true
+,	"undef": true
+,	"unused": true
+,	"curly": true
+,	"browser": true
+,	"quotmark": "single"
+,	"maxerr": 50
+,	"laxcomma": true
+,	"expr": true
+,	"newcap": false
+}

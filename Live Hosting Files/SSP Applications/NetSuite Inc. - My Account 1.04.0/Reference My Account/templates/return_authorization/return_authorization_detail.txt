@@ -1,0 +1,173 @@
+<%
+	var model = view.model
+	,	lines = model.get('lines')
+	,	summary = model.get('summary')
+	,	status = model.get('status').label
+	,	total_formatted = summary.total_formatted
+	,	application = view.application
+	,	internalid = model.get('internalid')
+	,	created_from = model.get('createdfrom')
+	,	created_from_url = view.getLinkedRecordUrl()
+	,	collapse_elements = application.getConfig('collapseElements')
+	,	download_url = _.getDownloadPdfUrl({
+			asset: 'return-details'
+		,	id: internalid
+		});
+%>
+<div class="content return-authorization-details-view">
+	<h3>
+		<%= view.page_header %>
+		<div class="pull-right strong billing-actions hidden-phone">
+			<span class="return-authorization-details-amount"><%= total_formatted %></span>
+		</div>
+	</h3>
+	<a href="/returns" class="back-btn">
+		<%= _('&lt; Back to Returns').translate() %>
+	</a>
+
+	<hr class="divider-small">
+	<div data-type="alert-placeholder"></div>
+
+	<div class="header-information margin-bottom-10">
+		<% if (created_from) { %>
+		<p class="info return-created-from">
+			<%= _('From:').translate() %> <a href="<%= created_from_url %>"><%= _('$(0) #$(1)').translate(view.getCreatedFromLabel(), created_from.tranid) %></a>
+		</p>
+		<% } %>
+		<p class="pull-right info hidden-phone return-status">
+			<%= _('Status:').translate() %> <span class="return-details-status status"><%= status %></span>
+		</p>
+		<p class="info">
+			<%= _('Date of request:').translate() %> <span class="return-date"><%= model.get('date') %></span>
+		</p>
+
+		<div class="visible-phone">
+			<p class="inf">
+				<%= _('Status:').translate() %> <span class="return-details-status status"><%= status %></span>
+				<span class="pull-right strong amount"><%= total_formatted %></span>
+			</p>
+		</div>
+	</div>
+
+	<div class="row-fluid" name="return-content-layout">
+		<div class="span8 return-details-notmodal-container">
+			<div class="control-group" data-type="accordion">
+				<div class="well" data-action="items-expander">
+					<div class="well-header">
+						<%= _('Items ($(0))').translate(lines.length) %>
+						<a href="#" class="pull-right"><i class="icon-plus <%= collapse_elements ? '' : 'icon-minus' %>"></i></a>
+					</div>
+				</div>
+				<div data-content="items-body" style="<%= collapse_elements ? 'display: none;' : '' %>">
+
+					<div class="row-fluid nav-tabs hide-phone">
+						<div class="span4 offset1 popover-content popover-heading"><%= _('Item').translate() %></div>
+						<div class="span1 popover-content popover-heading"><%= _('Qty').translate() %></div>
+						<div class="span4 popover-content popover-heading"><%= _('Reason').translate() %></div>
+						<div class="span2 popover-content popover-heading responsive-align"><%= _('Amount').translate() %></div>
+					</div>
+					<%	lines.each(function (line, index) { %>
+						<%
+							var link_attributes = false
+							,   itemKey = line.get('item')
+							,   url = itemKey.get('_isPurchasable') ? itemKey.get('_url') : null;
+
+							if (url && SC.ENVIRONMENT.siteType === 'ADVANCED')
+							{
+								link_attributes = SC.Utils.objectToAtrributes({
+									href: url
+									,   data: {
+										touchpoint: 'home'
+										,   hashtag: '#' + url
+									}
+								});
+							}
+							else if (url)
+							{
+								link_attributes = SC.Utils.objectToAtrributes({
+									href: url
+								});
+							}
+
+							var name = itemKey.get('_name');
+							if (link_attributes) {
+								name = '<a class="to-item-link" ' + link_attributes + '>' + name + '</a>';
+							}
+						%>
+
+						<div class="row-fluid nav-tabs item-<%= itemKey.get('internalid') %>">
+							<div class="span1 hide-phone item-image">
+								<img src="<%= view.options.application.resizeImage(itemKey.get('_thumbnail').url, 'tinythumb') %>" alt="<%= itemKey.get('_thumbnail').altimagetext %>">
+							</div>
+							<div class="span4 popover-content">
+								<div class="item-displayname">
+									<%= name %>
+								</div>
+								<div class="item-id">
+									<%= _('<span class="text-light">SKU:</span> <span class="item-sku">#$(0)</span>').translate(itemKey.get('_sku')) %>
+								</div>
+								<%= itemKey.renderAllOptionSelected() %>
+							</div>
+							<div class="span1 popover-content item-quantity"><span class="show-phone text-light"><%= _('Qty:').translate() %></span><%= line.get('quantity') %></div>
+							<div class="span4 popover-content"><span class="show-phone text-light"><%= _('Reason:').translate() %></span> <%= line.get('reason') %></div>
+							<div class="span2 popover-content responsive-align item-totalprice"><span class="show-phone text-light"><%= _('Amount:').translate() %></span> <%= line.get('amount_formatted') %></div>
+						</div>
+					<% }) %>
+				</div>
+			</div>
+			
+			<% if (model.get('comment')) { %>
+				<p><%= _('Comments:').translate() %></p>
+				<blockquote><%= model.get('comment') %></blockquote>
+			<% } %>
+		</div>
+
+		<div class="span4">
+			<div class="row-fluid">
+				<div class="list-header summary-container">
+					<div class="nav-tabs row-fluid control-group strong return-details-summary-header">
+						<%= _('SUMMARY').translate() %>
+					</div>
+
+					<div class="row-fluid control-group">
+						<div class="span8">
+							<%= _('Tax Total').translate() %>
+						</div>
+
+						<div class="span4 pull-right text-right tax-total">
+							<%= summary.taxtotal_formatted %>
+						</div>
+					</div>
+
+					<div class="nav-tabs row-fluid control-group">
+						<div class="span8">
+							<%= _('Shipping & Handling').translate() %>
+						</div>
+
+						<div class="span4 text-right shipping-cost">
+							<%= summary.shippingamount_formatted %>
+						</div>
+					</div>
+
+					<div class="row-fluid control-group strong total">
+						<div class="span8 text-strong">
+							<%= _('TOTAL').translate() %>
+						</div>
+
+						<div class="span4 text-right last total">
+							<%= total_formatted %>
+						</div>
+					</div>
+				</div>
+
+				<a class="btn btn-large btn-block margin-top-20 hidden-phone download-pdf" data-stdnav target="_blank" href="<%= download_url %>"><%= _('Download as PDF').translate() %></a>
+		
+				<% if (model.get('isCancelable')) { %>
+				<div>
+					<button class="btn btn-large btn-block margin-top-20" data-action="cancel"><%= _('Cancel request').translate() %></button>
+				</div>
+				<% } %>				
+			</div>
+		</div>
+	</div>
+</div>

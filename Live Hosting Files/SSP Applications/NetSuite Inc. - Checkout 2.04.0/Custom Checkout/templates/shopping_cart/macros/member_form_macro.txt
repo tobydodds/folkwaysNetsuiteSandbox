@@ -1,0 +1,29 @@
+<% registerMacro('membercodeForm', function( membercode ) { %>
+
+<% var is_invalid = !!( membercode && membercode.error ); %>
+
+<form class="form-inline" style="margin-bottom:5px!important" data-action="apply-membercode">
+	<fieldset>
+		<div class="control-group <%= is_invalid ? 'error' : '' %>">
+			<input
+				type="text"
+				name="membercode"
+				id="membercode"
+				class="input-medium membercode"
+				value="<%- membercode && membercode.code %>"
+				placeholder="<%- _('SI Member Code').translate() %>"
+				required
+			>
+			<button type="submit" class="btn">
+				<%= _('Apply').translate() %>
+			</button>
+		</div>
+		<div data-type="membercode-error-placeholder">
+		<% if (is_invalid) { %>
+			<%= SC.macros.message(membercode.error, 'error', true) %>
+		<% } %>
+		</div>
+	</fieldset>
+</form>
+
+<% }) %>

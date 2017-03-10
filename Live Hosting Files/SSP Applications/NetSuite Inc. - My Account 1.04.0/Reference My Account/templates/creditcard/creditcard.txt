@@ -1,0 +1,47 @@
+<% view.model = view.model || new Backbone.Model(); %>
+<% if (!view.inModal) { %>
+	<h3>
+		<%= view.model.isNew() ? _('Add a new Credit Card').translate() : _('Edit Credit Card').translate() %>
+	</h3>
+
+	<a href="/" class="back-btn">
+		<%= _('&lt; Back to Account').translate() %>
+	</a>
+	
+	<hr class="divider-small">
+	<% if (!view.collection.length) { %>
+		<p><b><%= _('We have no Credit Card on file for this account.').translate() %></b></p>
+		<p><%= _('For faster checkouts, please enter your payment information below').translate() %></p>
+		<hr class="divider-small">
+	<% } %>
+<% } %>
+
+<form action="creditcard.ss" method="POST">
+	<% if (view.inModal) { %>
+		<div class="modal-body">
+	<% } %>
+
+	<%= creditcardForm(view.model, view.options) %>
+
+	<% if (view.inModal) { %>
+		</div>
+	<% } %>
+
+	<div class="<%- view.inModal ? 'modal-footer left-aligned' : 'form-actions' %>">
+		<button type="submit" class="btn btn-primary">
+			<%= view.model.isNew() ? _('Add Card').translate() : _('Update Card').translate() %>
+		</button>
+
+		<% if (view.inModal || view.collection.length) { %>
+			<button class="btn" data-dismiss="modal">
+				<%= _('Cancel').translate() %>
+			</button>
+		<% } %>
+
+		<% if (!view.inModal) { %>
+			<button type="reset" class="btn hide" data-action="reset">
+				<%= _('Reset').translate() %>
+			</button>
+		<% } %>
+	</div>
+</form>

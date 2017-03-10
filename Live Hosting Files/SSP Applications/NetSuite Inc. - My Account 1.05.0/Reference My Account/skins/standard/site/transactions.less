@@ -1,0 +1,117 @@
+.transaction-history-row {
+	border-bottom: 1px solid black;
+}
+
+.transaction-history-navigate-to-item-details-link {
+	margin:10px;
+}
+
+.txHistory .list-header-sort {
+	@media (min-width: 768px) {
+		width: 140px;
+	}
+}
+
+.transaction-history-empty-list {
+	align-content: center;
+	text-align: center;
+	margin: 30px;
+	font-style:italic;
+}
+
+/*All transactioin that have summary, will show it in a second row in tablet*/
+.row-fluid .transaction-summary-one-col-tablet {
+	@media (max-width: 979px) {
+		width: 100%;
+		float:left;
+  		margin-left: inherit;
+
+		.row-fluid {
+			position: relative;
+		}
+  		.cell-alternative {
+  			position: absolute;
+  			top: 0px;
+			right: 0px;
+	}
+	}
+}
+.row-fluid .transaction-summary-one-col-desktop {
+	@media (min-width: 980px) {
+		width: 100%;
+		float:left;
+  		margin-left: inherit;
+	}
+}
+.col-date {
+	@media (min-width: 980px) {
+		text-align: right;
+	}
+}
+.col-amount {
+	@media (min-width: 980px) {
+		text-align: right;
+	}
+}
+
+.col-currency {
+	@media (min-width: 980px) {
+		text-align: right;
+	}
+}
+.col-status {
+	@media (min-width: 768px) {
+		text-align: right;
+	}
+}
+
+.col-status-record {
+	@media (min-width: 768px) {
+		text-align: right;
+	}
+}
+
+.status {
+	color: @statusRecordColor;
+	text-transform: uppercase;
+}
+
+.header-information {
+	margin-top: 4px;
+	margin-bottom: 10px;
+}
+.wrap-text {
+	word-wrap: break-word;
+}
+
+/*.touchable {
+	@media (max-width: 980px) {
+		height: 44px;
+		line-height: 44px;
+		display: inline-block;
+	}
+}*/
+
+.row-fluid {
+	.tablet-span2 {
+		@media (max-width: 980px) {
+			width: 50%;
+			float: left;
+			padding: 5px;
+			margin: inherit;
+		}
+		@media (max-width: 768px) {
+			width: 100%;
+			padding: 5px;
+		}
+		.rg {
+			@media (max-width: 980px) {
+				float: right;
+			}
+		}
+	}
+}
+
+.order-history-list-header {
+	padding:  @baseLineHeight / 2 + 2 9px;
+}

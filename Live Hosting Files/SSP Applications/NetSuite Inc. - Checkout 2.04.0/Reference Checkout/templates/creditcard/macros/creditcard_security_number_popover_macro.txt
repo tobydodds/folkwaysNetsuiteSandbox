@@ -1,0 +1,23 @@
+<% registerMacro('creditcardSecurityNumberPopover', function (options) { %>
+<% options = options || {}; %>
+
+    <% if (options.availableCreditcards.length) { %>
+        <% if (options.availableCreditcards.indexOf('VISA') != -1 || options.availableCreditcards.indexOf('Master Card') != -1 || options.availableCreditcards.indexOf('Discover') != -1) { %>
+            <p><%= _('VISA/Mastercard/Discover').translate() %></p>
+            <p><img src="<%= options.imageCvvAllCards %>" alt=""></p>
+        <% } %>
+        
+        <% if (options.availableCreditcards.indexOf('American Express') != -1) { %>
+            <p><%= _('American Express').translate() %></p>
+            <p><img src="<%= options.imageCvvAmericanCard %>" alt=""></p>
+        <% } %>
+    <% } else { %>
+        <p><%= _('VISA/Mastercard/Discover').translate() %></p>
+        <p><img src="<%= options.imageCvvAllCards %>" alt=""></p>
+
+        <p><%= _('American Express').translate() %></p>
+        <p><img src="<%= options.imageCvvAmericanCard %>" alt=""></p>
+    <% } %>
+
+    <button type="button" class="visible-phone btn btn-block btn-large btn-continue" data-type="close-popover"><%= _('OK').translate() %></button>
+<% }) %>

@@ -1,0 +1,103 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js"></script>
+<script>
+
+var opts = {
+  lines:            13,  // The number of lines to draw
+  length:           20,  // The length of each line
+  width:             7,  // The line thickness
+  radius:           30,  // The radius of the inner circle
+  corners:           1,  // Corner roundness (0..1)
+  rotate:            0,  // The rotation offset
+  direction:         1,  // 1: clockwise, -1: counterclockwise
+  color:         '#000', // #rgb or #rrggbb or array of colors
+  speed:             1,  // Rounds per second
+  trail:            60,  // Afterglow percentage
+  shadow:        false,  // Whether to render a shadow
+  hwaccel:       false,  // Whether to use hardware acceleration
+  className:  'spinner', // The CSS class to assign to the spinner
+  zIndex:          2e9,  // The z-index (defaults to 2000000000)
+  top:            '50%', // Top position relative to parent
+  left:           '50%'  // Left position relative to parent
+
+};
+
+
+var target = document.getElementById('loading');
+var spinner = new Spinner(opts).spin(target);
+var objectJSON = {};
+
+
+function addProduct(internalid) {
+
+	var data = {"internalid" : internalid, "quantity" : jQuery('#select_qty').val() };
+	var spinner = new Spinner(opts).spin(target);
+
+	jQuery.getJSON("http://folkways-store.si.edu/checkout-2-04-0/services/live-order-line-newgen.ss?callback=?", data, function(spinner, target) {} )
+		.done(function(response) {
+		  
+      var cartJSON = jQuery.parseJSON(response);
+      var item = findItem(cartJSON['latest_addition'], cartJSON['lines']);
+
+      console.log(item);
+
+      jQuery('#item_thumbnail').attr('src', item[0].item.storedisplaythumbnail)
+      jQuery('#name').html(item[0].item.displayname)
+      jQuery('#sku').html(item[0].item.itemid)
+      jQuery('#description').html(item[0].item.storedescription)
+
+
+      jQuery('#modalSuccess').modal('show');
+
+		});
+}
+
+function findItem(internalid, items){
+    return jQuery.grep(items, function(n, i){
+      return n.internalid == internalid;
+    });
+};
+
+
+</script>
+</head>
+<body>INPUT BOX TO PLACE ON PAGE:
+    <span id="canPurchase"><input type="number" id="select_qty" name="select_qty" value="1" min="1" data-bv-greaterthan-message="The input must be greater than zero" style="width:50px;">&nbsp;<a href="javascript:addProduct('58139','');"><span id="add_item" class="fa fa-plus-square" style="color:#0079c0; cursor:pointer;"></span></a>
+    <div id="loading" style="position: relative !important;"></div>
+    <div id="item_success"></div>
+	<div class="modal fade" id="modalSuccess">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+	        <h4 class="modal-title">Added to Cart</h4>
+	      </div>
+	      <div class="modal-body">
+          <div class="row">
+              <div class="col-xs-3 thumbnail cart-item-thumbnail">
+                    <img src="" alt="SF-40201-CD" id="item_thumbnail">
+              </div>
+              <div class="col-xs-9 details">
+                <div class="col-xs-9 cart-item-details">
+                  <div class="name" id="name"></div>
+                  <div class="sku" id="sku"></div>
+                  <div class="description" id="description"></div>
+                </div>      
+                <div class="col-xs-3 amount">$89.98</div>
+              </div>
+            </div>	        
+	      </div>
+	      <div class="modal-footer">
+	        <a href="http://folkways-store.si.edu/Checkout/cart.ssp#cart" class="btn btn-primary view-cart" data-trigger="go-to-cart">View Cart &amp; Checkout</a>
+	        <button class="btn continue-shopping" data-dismiss="modal">Continue Shopping</button>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->    
+</body>
+</html>

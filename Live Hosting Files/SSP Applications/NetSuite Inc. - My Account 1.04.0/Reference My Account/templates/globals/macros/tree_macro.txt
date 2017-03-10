@@ -1,0 +1,23 @@
+<% registerMacro('tree', function(model, self, level, root) { %>
+
+<% var expandable = model.children && model.children.length > 0; %>
+<li data-id='<%=model.id%>' data-label='<%=model.id%>' <%= root ? 'data-type="tree" data-toggle="tree"' : ''%> data-permissions="<%= model.permission %>" data-permissions-operator="<%= model.permissionOperator %>">
+
+	<% if(expandable) { %>
+	<div class="expandable">
+		<a <%= model.url ? 'href=/' + model.url : '' %>><%= model.name %></a>
+		<i class="pull-right icon-chevron-right"></i>
+	</div>
+	<% level++;	%>
+	<ul class="nav nav-tabs nav-stacked tree-level-<%=level%>" data-type="sub-menu">
+	<% var ordered_children = _(model.children).sortBy(function(item){return item.index + item.name; }); 
+		_.each(ordered_children, function (tree_item, index){ %>
+		<%=self(tree_item, self, level) %>
+	<%})%>
+	</ul>
+	<% } else { %>
+	<a <%= model.url ? 'href=/' + model.url : '' %>><%= model.name %></a>
+	<% } %>
+</li>
+
+<% }) %>

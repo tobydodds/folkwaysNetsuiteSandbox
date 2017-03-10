@@ -1,0 +1,174 @@
+<%	var elements = []
+	,   items = view.model.get('lines')
+	,   collapse_elements = view.application.getConfig('collapseElements')
+	,	title = _('Receipt').translate()
+	,	status = _('Status: <span class="payment-status order-status status">$(0)</span>').translate(view.model.get('status') || _('Deposited').translate())
+	,	url = _.getDownloadPdfUrl({
+			asset: 'receipt-details'
+		,	trantype: view.model.get('trantype')
+		,	label: encodeURIComponent(view.model.get('type_name'))
+		,	id: view.model.get('internalid')
+	});
+%>
+
+<section>
+	<header>
+		<h3>
+			<%= _('Receipt <b>#$(0)</b>').translate(view.model.get('order_number')) %>
+			<span class="pull-right hidden-phone strong">
+				<%= view.model.get('summary').total_formatted %>
+			</span>
+		</h3>
+		<a href="/receiptshistory" class="back-btn">
+			<%= _('&lt; Back to Cash Sales &amp; Receipts').translate() %>
+		</a>
+	</header>
+
+	<hr class="divider-small">
+
+	<!-- Navigation Links -->
+	<div class="header-information margin-bottom-10">
+		<div class="row-fluid">
+			<div class="span12">
+				<p class="pull-right info hidden-phone">
+					<%= status %>
+				</p>
+				<p class="info">
+					<%= _('Date: $(0)').translate(view.model.get('date')) %>
+				</p>
+				<p class="info visible-phone">
+					<%= status %>
+				</p>
+			</div>
+		</div>
+
+		<div class="row-fluid">
+			<a href="<%= url %>" target="_blank" class="btn btn-expanded pull-right download-pdf"><%= _('Download as PDF').translate() %></a>
+		</div>
+	</div>
+
+	<!-- Fullfillment -->
+	<table class="table order-details">
+		<!-- Fullfillment Title -->
+		<tr>
+			<td colspan="3">
+				<h3><%= _('Payment Information').translate() %></h3>
+			</td>
+		</tr>
+		<!-- Fullfillment Lines -->
+		<tr>
+			<td colspan="3">
+				<table class="table order-lines">
+					<col class="order-items-col1">
+					<col class="order-items-col2">
+					<col class="order-items-col3">
+					<col class="order-items-col4">
+					<col class="order-items-col5">
+					<tr>
+						<th class="text-light font-normal"><%= _('Image').translate() %></th>
+						<th class="text-light font-normal"><%= _('Name').translate() %></th>
+						<th class="text-light font-normal"><%= _('Qty').translate() %></th>
+						<th class="text-light font-normal"><%= _('Price').translate() %></th>
+						<th class="text-light font-normal"><%= _('Amount').translate() %></th>
+					</tr>
+					<%
+						_.each(view.model.get('lines').models, function (line, index)
+						{
+							var	item_details = {
+									item: line.get('item')
+								,	id: line.id
+								,	options: line.get('options')
+								,	quantity: line.get('quantity')
+								,	price: line.get('rate_formatted')
+								,	amount: line.get('amount_formatted')
+								,	reorder: line.get('item').get('_isPurchasable')
+								,	application: view.options.application
+								}
+							,	shipgroup_subtotal = shipgroup_subtotal + item_details.amount
+					%>
+						<%= itemDetails(item_details) %>
+					<% }) %>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<!-- Shipping Groups Ends -->
+	<!-- Payment Information -->
+	<table class="table order-details">
+		<col class="order-details-col1">
+		<col class="order-details-col2">
+		<col class="order-details-col3">
+		<!-- Payment Information Title -->
+		<tr>
+			<td colspan="3">
+				<h3><%= _('Payment Information').translate() %></h3>
+			</td>
+		</tr>
+		<!-- Payment Information Title Ends -->
+		<tr>
+			<td>
+				<p><b><%= _('Billing To').translate() %></b></p>
+				<% var billaddress = view.model.get('addresses').get(view.model.get('billaddress')); %>
+				<p><%= ( ( billaddress && billaddress.getFormattedAddress() ) || _('N/A').translate()).replace(/\n/g, '<br>') %></p>
+			</td>
+			<td>
+				<p><b><%= _('Payment Method').translate() %></b></p>
+				<p>
+				<% var paymentmethod = view.model.get('paymentmethods') && view.model.get('paymentmethods').findWhere({primary: true}); %>
+				<% if (paymentmethod) { %>
+					<%= SC.macros.formatPaymentMethod(paymentmethod, view.application.getConfig('creditCardIcons')) %>
+				<% } else { %>
+					<%= _('N/A').translate() %>
+				<% } %>
+				</p>
+			</td>
+			<td>
+				<p><b><%= _('$(0) Summary').translate( title ) %></b></p>
+				<p>
+					<table class="table table-condensed order-sumary">
+						<col class="order-sumary-names">
+						<col class="order-sumary-values">
+						<tbody>
+							<tr>
+								<td class="order-sumary-name"><%= _('$(0) Subtotal').translate( title ) %></td>
+								<td class="order-sumary-value"><%= view.model.get('summary').subtotal_formatted  %></td>
+							</tr>
+							<% if ( parseFloat( view.model.get('summary').discounttotal ) ) { %>
+							<tr>
+								<td class="order-sumary-name"><%= _('$(0) Discount').translate( title ) %></td>
+								<td class="order-sumary-value"><%= view.model.get('summary').discounttotal_formatted  %></td>
+							</tr>
+							<% } %>
+							<% if ( parseFloat( view.model.get('summary').shippingcost ) ) { %>
+							<tr>
+								<td class="order-sumary-name"><%= _('Shipping Total').translate() %></td>
+								<td class="order-sumary-value"><%= view.model.get('summary').shippingcost_formatted %></td>
+							</tr>
+							<% } %>
+							<% if ( parseFloat( view.model.get('summary').handlingcost ) ) { %>
+							<tr>
+								<td class="order-sumary-name"><%= _('Handling Total').translate() %></td>
+								<td class="order-sumary-value"><%= view.model.get('summary').handlingcost_formatted %></td>
+							</tr>
+							<% } %>
+							<% if ( view.model.get('promocode') ) { %>
+							<tr>
+								<td class="order-sumary-name"><%= _('Promo Code').translate() %></td>
+								<td class="order-sumary-value"><%= view.model.get('promocode').code %></td>
+							</tr>
+							<% } %>
+							<tr>
+								<td class="order-sumary-name"><%= _('Tax Total').translate() %></td>
+								<td class="order-sumary-value"><%= view.model.get('summary').taxtotal_formatted %></td>
+							</tr>
+							<tr>
+								<th class="order-sumary-name"><%= _('$(0) Total').translate( title ) %></th>
+								<th class="order-sumary-value"><%= view.model.get('summary').total_formatted %></th>
+							</tr>
+						</tbody>
+					</table>
+				</p>
+			</td>
+		</tr>
+	</table>
+</section>

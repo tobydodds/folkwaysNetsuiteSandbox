@@ -1,0 +1,14 @@
+<section>
+	<% if (view.page_header && !view.inModal) { %>
+		<h3 class="no-margin-top"><%= view.page_header %></h3>
+		<a href="/" class="back-btn"><%= _('&lt; Back to Account').translate() %></a>
+		<hr class="divider-small">
+	<% } %>
+	<div id="main-banner" class="main-banner"></div>
+
+	<% if (view.page && view.page.get('content')) { %>
+		<div id="landing-page-content" class="view-body landing-page-content">
+			<%= view.page.get('content') %>
+		</div>
+	<% } %>
+</section>

@@ -1,0 +1,10 @@
+<div class="alert alert-block alert-success fade in">
+	<h4 class="alert-heading"><%= _('Thank you for shopping with us!').translate() %></h4>
+	<p style="margin-top:10px"><%= _('Your order number is <big><strong>#$(0)</strong></big>.').translate(view.confirmationNumber) %></p>
+	<p style="margin-top:10px">If you purchased a digital download as part of your order please <a href="http://www.folkways.si.edu/my-downloads/smithsonian">click here</a> to access your files. This link will also be sent to you via email. If you need help downloading please visit our <a href="http://www.folkways.si.edu/download-support/smithsonian">Download Support</a> for more information and a tutorial.<p>
+<!--p style="margin-top:10px">If you pre-ordered <a href="http://www.folkways.si.edu/leadbelly" target="_blank"><i>Lead Belly: The Smithsonian Folkways Collection</i></a>, with or without a t-shirt and poster, your entire order will ship in February, 2015 by the shipping method you selected. Your pre-order includes an instant album download of <i>Lead Belly: The Smithsonian Folkways Collection</i>. Please <a href="http://www.folkways.si.edu/my-downloads/smithsonian">click here</a> to access your downloads.</p-->
+	<p style="margin-top:10px">Please contact us at <a href="mailto:SmithsonianFolkways@SI.EDU">SmithsonianFolkways@SI.EDU</a> with any questions.</p>	
+	<p style="margin-top:10px">
+		<a class="btn btn-success" href="/" data-touchpoint="continueshopping" data-hashtag="#/"><%= _('Continue shopping').translate() %></a>
+	</p>
+</div>

@@ -1,0 +1,7 @@
+<% registerMacro('itemActionsAddToCartReOrder', function (options) {
+	var item = options.line.get('item')
+ %>
+	<div class="add-to-cart-button-container">
+		<button class="btn btn-primary pull-right add-to-cart-btn" <%= item.get('_isPurchasable') ? '': 'disabled' %> ><%= _('Add to Cart').translate() %></button>
+	</div>
+<% }) %>

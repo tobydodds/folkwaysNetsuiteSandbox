@@ -1,0 +1,37 @@
+<% registerMacro('recentOrdersWidget', function ( ordersToShow ) { %>
+<div class="recentOrdersWidget" data-permissions="transactions.tranFind.1,transactions.tranSalesOrd.1">
+	<div>
+		<a href="/ordershistory" class="pull-right"><%= _('View All Order History').translate() %> &gt;</a>
+		<h4><%= _('Recent Orders').translate() %></h4>
+	</div>
+	<hr>
+	<% if ( ordersToShow.length ) { %>
+		<table class="table">
+			<thead>
+				<tr>
+					<th><%= _('Order Date').translate() %></th>
+					<th><%= _('Order Number').translate() %></th>
+					<th><%= _('Order Total').translate() %></th>
+					<th><%= _('Status').translate() %></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+			<% _.each(ordersToShow, function (order, index) { %>
+				<tr>
+					<td><%= order.get('date') %></td>
+					<td><%= order.get('order_number') %></td>
+					<td><%= order.get('summary').total_formatted %></td>
+					<td><%= order.get('status') %></td>
+					<td>
+						<a href="/ordershistory/view/<%= order.get('internalid') %>"><%= _('View Order Details').translate() %></a>
+					</td>
+				</tr>
+			<% }) %>
+			</tbody>
+		</table>
+	<% } else { %>
+		<p><%= _('We have no orders on file for this account.').translate() %></p>
+	<% } %>
+</div>
+<% }) %>

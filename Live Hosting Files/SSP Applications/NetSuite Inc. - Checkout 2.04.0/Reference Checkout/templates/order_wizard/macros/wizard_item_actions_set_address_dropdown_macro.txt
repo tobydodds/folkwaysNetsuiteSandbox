@@ -1,0 +1,21 @@
+<% registerMacro('wizardItemActionsSetAddressDropDown', function (options) { %>
+	<%
+	var addresses =  options.addresses
+	,	line = options.line;
+	%>
+	<span> <%= _('Ship items to ').translate() %></span>
+	<select data-line-id="<%= line.id %>" data-type="set-shipments-address-selector" class="multishipto-address-selector"
+		<%= addresses && addresses.length ? '' : 'disabled="disabled"' %> >
+		<% if (addresses && addresses.length) { %>
+			<% addresses.each(function(address) { %>
+				<option value="<%= address.get('internalid') %>" <%= address.get('internalid') === line.get('shipaddress') ? 'selected' : '' %> >
+					<%= address.get('fullname') + " - " + address.get('addr1') %>
+				</option>
+			<% }) %>
+			<% } else { %>
+				<option value="" 'selected' >
+					<%= _('Assign shipping addresses').translate() %>
+				</option>
+			<% } %>
+	</select>
+<% }) %>

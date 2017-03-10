@@ -1,0 +1,209 @@
+<%	var elements = []
+	,   lines = view.model.get('lines').models
+	,   collapse_elements = view.application.getConfig('collapseElements')
+	,	title = _('Receipt').translate()
+	,	url = _.getDownloadPdfUrl({
+			asset: 'receipt-details'
+		,	trantype: view.model.get('trantype')
+		,	label: encodeURIComponent(view.model.get('type_name'))
+		,	id: view.model.get('internalid')
+	})
+	,	billaddress = view.model.get('addresses').get(view.model.get('billaddress'))
+	,	paymentmethod = view.model.get('paymentmethods') && view.model.get('paymentmethods').findWhere({primary: true});
+%>
+
+<section>
+	<header>
+		<h3>
+			<%= _('Receipt <b class="tranid">#$(0)</b>').translate(view.model.get('order_number')) %>
+			<span class="pull-right hidden-phone strong amount">
+				<%= view.model.get('summary').total_formatted %>
+			</span>
+		</h3>
+		<a href="/receiptshistory" class="back-btn">
+			<%= _('&lt; Back to Receipts').translate() %>
+		</a>
+	</header>
+
+	<hr class="divider-small">
+
+	<!-- HEADER INFORMATION -->
+	<div class="header-information">
+		<div class="row-fluid">
+			<div class="span6">
+				<p class="info">
+					<%= _('Date: <span class="date">$(0)</span>').translate(view.model.get('date')) %>
+				</p>
+			</div>
+			<div class="span6 col-status-record">
+				<p class="info">
+					<%=  _('Status: <span class="status">$(0)</span>').translate(view.model.get('status')) %>
+				</p>
+			</div>
+			<div class="span12 visible-phone">
+				<p class="info">
+					<%= _('Amount: <span class="amount">$(0)</span>').translate(view.model.get('summary').total_formatted) %>
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+		<div class="span8 transaction-summary-one-col-tablet">
+			<!-- ITEMS -->
+			<% if (lines && lines.length) { %>
+				<div class="row-fluid control-group item-container" data-type="accordion">
+					<div class="well" data-action="items-expander">
+						<div class="well-header">
+							<span class="items-drop-down"><%= lines.length > 1 ? _('Products (<span class="items-count">$(0)</span>)').translate(lines.length) : _('Product (<span class="items-count">$(0)</span>)').translate(lines.length) %></span>
+							<a href="#" class="pull-right"><i class="icon-plus  <%= collapse_elements ? 'items-maximize' : 'icon-minus items-minimize' %>"></i></a>
+						</div>
+					</div>
+					<div data-content="items-body" <%= collapse_elements ? 'style="display: none;"' : '' %>>
+						<%
+						_.each(lines, function (line, index)
+						{
+							var	item_details = {
+									item: line.get('item')
+								,	id: line.id
+								,	options: line.get('options')
+								,	quantity: line.get('quantity')
+								,	price: line.get('rate_formatted')
+								,	amount: line.get('amount_formatted')
+								,	reorder: line.get('item').get('_isPurchasable')
+								,	application: view.options.application
+								}
+							,	shipgroup_subtotal = shipgroup_subtotal + item_details.amount;
+						%>
+						<%= itemDetails(item_details) %>
+						<% }) %>
+					</div>
+				</div>
+			<% } %>
+
+			<!-- PAYMENT INFORMATION -->
+			<div class="row-fluid control-group  payment-information-container" data-type="accordion">
+				<div class="well-secundary" data-action="items-expander">
+					<div class="well-header">
+						<%= _('<span class="payment-information-drop-down">Payment Information</span>').translate() %>
+						<a href="#" class="pull-right"><i class="icon-plus"></i></a>
+					</div>
+				</div>
+				<div data-content="items-body" style="display: none;">
+					<div class="row-fluid nav-tabs">
+						<div class="span12 popover-content">
+							<div class="payment-information">
+								<div class="main-container">
+									<div class="span6">
+										<div class="text-light">
+											<%= _('Payment Method:').translate() %>
+										</div>
+										<div class="payment-information-info">
+											<%= paymentmethod ? SC.macros.formatPaymentMethod(paymentmethod, view.application.getConfig('creditCardIcons')) : _('N/A').translate() %>
+										</div>
+									</div>
+									<div class="span6">
+										<div class="text-light">
+											<%= _('Bill to:').translate() %>
+										</div>
+										<div class="billaddress-info">
+											<address><%= (billaddress && SC.macros.address(billaddress, {hideDefaults: true, hideActions: true}) ) || _('N/A').translate() %></address>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="span4 transaction-summary-one-col-tablet">
+			<div class="row-fluid">
+				<div class="list-header summary-container">
+					<!-- SUMMARY -->
+					<div class="nav-tabs row-fluid control-group strong">
+						<%= _('SUMMARY').translate() %>
+					</div>
+					<div class="row-fluid control-group">
+						<div class="span8  ">
+							<%= _('Subtotal').translate() %>
+						</div>
+						<div class="span4 text-right">
+							<span class="summary-subtotal"><%= view.model.get('summary').subtotal_formatted  %></span>
+						</div>
+					</div>
+
+					<% if ( parseFloat( view.model.get('summary').discounttotal ) ) { %>
+					<div class="row-fluid control-group">
+						<div class="span8">
+							<%= _('Discount').translate() %>
+						</div>
+						<div class="span4 text-right">
+							<span class="summary-discounttotal"><%= view.model.get('summary').discounttotal_formatted  %></span>
+						</div>
+					</div>
+					<% } %>
+
+					<% if ( parseFloat( view.model.get('summary').shippingcost ) ) { %>
+					<div class="row-fluid control-group">
+						<div class="span8">
+							<%= _('Shipping Total').translate() %>
+						</div>
+						<div class="span4 text-right">
+							<span class="summary-shippingcost"><%= view.model.get('summary').shippingcost_formatted %></span>
+						</div>
+					</div>
+					<% } %>
+
+					<% if ( parseFloat( view.model.get('summary').handlingcost ) ) { %>
+					<div class="row-fluid control-group">
+						<div class="span8">
+							<%= _('Handling Total').translate() %>
+						</div>
+						<div class="span4 text-right">
+							<span class="summary-handlingcost"><%= view.model.get('summary').handlingcost_formatted %></span>
+						</div>
+					</div>
+					<% } %>
+
+					<% if ( view.model.get('promocode') ) { %>
+					<div class="row-fluid control-group">
+						<div class="span8">
+							<%= _('Promo Code').translate() %>
+						</div>
+						<div class="span4 text-right">
+							<span class="summary-promocode"><%= view.model.get('promocode').code %></span>
+						</div>
+					</div>
+					<% } %>
+
+					<div class="nav-tabs row-fluid control-group">
+						<div class="span8">
+							<%= _('Tax Total').translate() %>
+						</div>
+						<div class="span4 text-right">
+							<span class="summary-taxtotal"><%= view.model.get('summary').taxtotal_formatted %></span>
+						</div>
+					</div>
+
+					<div class="row-fluid control-group strong total">
+						<div class="span8">
+							<%= _('Total').translate() %>
+						</div>
+						<div class="span4 text-right last">
+							<span class="summary-total"><%= view.model.get('summary').total_formatted %></span>
+						</div>
+					</div>
+				</div>
+
+				<!-- DOWNLOAD AS PDF -->
+				<div class="row-fluid">
+					<div class="span4 transaction-summary-one-col-desktop margin-top-10">
+						<a href="<%= url %>" target="_blank" class="btn btn-expanded btn-block btn-large download-pdf-btn"><%= _('Download as PDF').translate() %></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

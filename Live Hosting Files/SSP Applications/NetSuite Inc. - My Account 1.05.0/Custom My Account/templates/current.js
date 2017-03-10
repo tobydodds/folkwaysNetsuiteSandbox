@@ -1,0 +1,1 @@
+BDQ.currentTemplatesUrl = '/Web Site Hosting Files/Live Hosting Files/myaccount-1-05-0/templates/Templates-01523d3d8de7.js';

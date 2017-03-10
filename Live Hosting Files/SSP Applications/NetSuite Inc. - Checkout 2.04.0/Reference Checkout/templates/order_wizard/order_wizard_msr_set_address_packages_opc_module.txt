@@ -1,0 +1,23 @@
+<%
+	var addresses = view.getValidAddresses()
+	,	application = view.wizard.application
+	,	lines = view.getShippableLines();
+%>
+<% if (!view.options.hide_title && view.getTitle()) { %>
+	<h3 class="section-header">
+		<%= view.getTitle() %>
+	</h3>
+<% } %>
+
+<div data-type="items-remaining-list" class="multishipto-package">
+
+	<% _.each(lines, function(line) { %>
+		<%= itemDetailsCondensed({
+				application: application
+			,	line: line
+			,	actionMacro: wizardItemActionsSetAddressDropDown
+			,	showItemsDetails: true
+			,	addresses: addresses
+			}) %>
+	<% }) %>
+</div>

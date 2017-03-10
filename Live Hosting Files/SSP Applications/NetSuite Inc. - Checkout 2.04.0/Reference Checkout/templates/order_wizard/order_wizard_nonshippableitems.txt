@@ -1,0 +1,23 @@
+<%
+	var non_shippable_lines = view.getNonShippableLines()
+	,	application = view.options.application;
+%>
+
+<div data-type="nonshippable-lines-warning-container" class="nonshippable-items multishipto-package">
+	<h4 class="non-shippable-items-subtitle"> <%= _('This feature does not support the following items:').translate() %> </h4>
+
+	<div class="row-fluid control-group items-container" >
+
+		<% _.each(non_shippable_lines, function(item) { %>
+			<%= itemDetailsCondensed({
+				application: application
+			,	line: item
+			}) %>
+		<% }) %>
+
+	</div>
+	<div data-type="action-buttons-container" class="buttons-container">
+		<button type="button" class="btn" data-dismiss="modal" data-type="cancel"><%= _('Cancel').translate() %></button>
+		<a href="#" class="btn btn-link btn-edit-cart" data-touchpoint="viewcart" data-type="edit-order"><%= _('Edit Order').translate() %> </a>
+	</div>
+</div>

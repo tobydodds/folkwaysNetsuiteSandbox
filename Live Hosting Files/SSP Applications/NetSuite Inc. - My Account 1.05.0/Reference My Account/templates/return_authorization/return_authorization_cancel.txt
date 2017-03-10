@@ -1,0 +1,12 @@
+<div class="modal-body">
+	<h4><%= _('Are you sure you want to cancel this return request?').translate() %></h4>
+	<p class="text-light"><%= _('The status of the request will change to "Cancelled" but it won\'t be removed.').translate() %></p>
+</div>
+<div class="modal-footer">
+	<button class="btn btn-primary pull-right" data-action="delete">
+		<%= _('Yes').translate() %>
+	</button>
+	<button class="btn" data-dismiss="modal" data-action="cancel">
+		<%= _('No').translate() %>
+	</button>
+</div>

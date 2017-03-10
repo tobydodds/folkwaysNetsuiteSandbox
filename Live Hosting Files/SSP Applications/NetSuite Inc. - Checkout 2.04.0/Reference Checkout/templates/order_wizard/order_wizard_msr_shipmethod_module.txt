@@ -1,0 +1,157 @@
+<%
+	var packages = view.getPackages()
+	,	non_shippable_lines = view.wizard.model.getNonShippableLines()
+	,	general_collapse_elements =  view.getDefaultCollapseItem()
+	,	show_edit_address_url = !!view.options.show_edit_address_url
+	,	show_combo = view.options.show_combo
+	,	is_read_only = view.is_read_only
+	,	hide_accordion = view.options.hide_accordion
+	,	show_items = !view.options.hide_items
+	,	application = view.wizard.application;
+%>
+
+<% if (!view.options.hide_title && view.getTitle()) { %>
+	<h3 class="section-header">
+		<%= view.getTitle() %>
+	</h3>
+<% } %>
+
+<div data-type="shipments-list">
+	<% _.each(packages, function(package) { %>
+		<%
+			var items = package.lines
+			,	selected_address = package.address
+			,	delivery_methods = package.deliveryMethods
+			,	collapse_elements = _.isUndefined(package.collapse_elements) ? general_collapse_elements : package.collapse_elements;
+		%>
+		<div class="row-fluid" data-type="package" data-address-id="<%= selected_address.get('internalid') %>">
+			<div data-type="package-style" class="clearfix multishipto-package multishipto-package-reduced">
+				<div class="span12">
+					<div class="row-fluid" data-type="address-container">
+						<div class="span6">
+						<h3 class="section-sub-tile-header delivery-method-title"> <%= _('Shipment').translate() %> </h3>
+
+						<%= address(selected_address,  {
+							hideActions: true
+						,	hideDefaults: true
+						,	manage: 'shipaddress'
+						}) %>
+
+						<% if (show_edit_address_url)  { %>
+							<a href="/addressbook/<%- selected_address.get('internalid') %>" class="edit-address-link" data-toggle="show-in-modal">
+								<%= _('Edit Address').translate() %>
+							</a>
+						<% } %>
+
+						</div>
+
+						<div class="span6">
+							<h3 class="section-sub-tile-header delivery-method-title"> <%= _('Delivery Method').translate() %> </h3>
+
+							<% if (!delivery_methods.length) { %>
+								<div class="error-message-no-shipping-address" ><%= _('Warning: No Shipping Methods are available for this address').translate() %></div>
+							<% } else { %>
+
+								<% if (show_combo) { %>
+									<% if (!is_read_only) { %>
+
+										<select data-address-id="<%= selected_address.get('internalid') %>" data-type="address-selector" class="multishipto-address-selector" >
+										<% 	var is_a_selected_method = delivery_methods.findWhere({check: true})
+											,	is_warning_shown = false; %>
+										<% delivery_methods.each(function(delivery_method, index) { %>
+											<% if (!is_a_selected_method && !is_warning_shown) { %>
+												<% is_warning_shown = true; %>
+												<option><%= _('Please select a shipping method').translate() %></option>
+											<% } %>
+
+											<option  value="<%= delivery_method.get('internalid') %>" data-type="delivery-method-option" class="delivery-method-option <%= delivery_method.get('check') ? 'active' : '' %>"
+													<%= delivery_method.get('check') ? 'selected' : '' %> >
+												 <%= _('$(0) $(1)').translate(_.isUndefined(delivery_method.get('rate_formatted')) ? '' : delivery_method.get('rate_formatted') , delivery_method.get('name')) %>
+											</option>
+										<% }) %>
+										</select>
+
+									<% } else { %>
+
+										<div>
+											<% var delivery_method = delivery_methods.first() %>
+											<% if (delivery_method) { %>
+											<%=	_('$(0) $(1)').translate(_.isUndefined(delivery_method.get('rate_formatted')) ? '' : delivery_method.get('rate_formatted') , delivery_method.get('name')) %>
+											<% } %>
+										</div>
+
+									<% } %>
+
+								<% } else { //Show Radio %>
+
+									<div data-type="delivery-method-options-container">
+
+										<% delivery_methods.each(function(delivery_method, index) { %>
+											<div data-address-id="<%= selected_address.get('internalid') %>" data-deliverymethod-id="<%= delivery_method.get('internalid') %>" data-type="delivery-method-option" class="delivery-method-option" >
+												<input data-type="radio-delivery-method" id="radio-<%=selected_address.get('internalid') %>-<%=delivery_method.get('internalid') %>" type="radio" value="<%= delivery_method.get('internalid') %>" name="<%= selected_address.get('internalid') %>" <%= delivery_method.get('check') ? 'checked' : '' %> />
+
+												<label class="delivery-method-label" for="radio-<%=selected_address.get('internalid') %>-<%=delivery_method.get('internalid') %>">
+													<%= _('<span data-type="delivery-method-cost">$(0)</span> <span data-type="delivery-method-title">$(1)</span>').translate(_.isUndefined(delivery_method.get('rate_formatted')) ? '' : delivery_method.get('rate_formatted') , delivery_method.get('name')) %>
+												</label>
+											</div>
+										<% }) %>
+
+									</div>
+								<% } %>
+							<% } %>
+						</div>
+					</div>
+
+					<% if (!hide_accordion) { %>
+					<div class="row-fluid control-group items-container" data-type="accordion">
+						<% if (show_items) { %>
+						<div class="accordion" id="accordion<%=selected_address.get('internalid')%>">
+							<div class="accordion-group">
+								<div class="accordion-heading well well-header" >
+									 <div class="accordion-toggle <%= collapse_elements ? 'collapsed' : '' %>" data-action="items-expander" data-toggle="collapse" data-target="#accordion-body<%=selected_address.get('internalid')%>">
+										<%= _('Items (<span class="items-count">$(0)</span>)').translate(items.length) %>
+										<% if (items.length) { %>
+											<i class="icon-minus-sign pull-right"></i>
+											<i class="icon-plus-sign pull-right"></i>
+										<% } %>
+									</div>
+								</div>
+
+								<div id="accordion-body<%=selected_address.get('internalid')%>" class="accordion-body collapse <%= collapse_elements ? '' : 'in' %>">
+									<div class="accordion-inner" data-content="items-body" >
+										<div class="row-fluid">
+											<% if (view.options.edit_shipment_url) { %>
+												<a data-type="edit-shipment-link" href="<%= view.options.edit_shipment_url + '?force=true'  %>"><%= _('Edit Shipment').translate() %></a>
+											<% } %>
+										</div>
+
+										<% _.each(items, function(line) { %>
+											<%= itemDetailsCondensed({
+													application: application
+												,	line: line
+												,	actionMacro: null
+												,	showItemsDetails: true
+												}) %>
+										<% }) %>
+
+									</div>
+								</div>
+
+							</div>
+						</div>
+						<% } else {%>
+						<span class="item-count-container"><%= items.length > 1 ? _('<span class="items-count">$(0)</span> Items').translate(items.length) : _('<span class="items-count">$(0)</span> Item').translate(items.length) %></span>
+						<% } %>
+
+					</div>
+					<% } %>
+
+				</div>
+			</div>
+		</div>
+	<% }) %>
+</div>
+
+<% if (!packages || !packages.length) { %>
+	<p><%= _('You haven\'t set any shipments yet').translate() %></p>
+<% } %>

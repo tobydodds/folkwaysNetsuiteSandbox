@@ -1,0 +1,84 @@
+{
+	"globals": {
+		"container": true
+	,	"session": true
+	,	"settings": true
+	,	"customer": true
+	,	"context": true
+	,	"order": true
+	,	"console": true
+	}
+
+,	"predef": [
+		"_"
+	,	"SC"
+	,	"Backbone"
+	,	"Application"
+	,	"getItemOptionsObject"
+	,	"response"
+	,	"request"
+	,	"Validation"
+	,	"HOSTS"
+	,	"toCurrency"
+	,	"formatCurrency"
+	,	"BigNumber"
+
+		// commons.js
+	,	"setPaymentMethodToResult"
+	,	"isLoggedIn"
+
+		// errors
+	,	"forbiddenError"
+	,	"notFoundError"
+	,	"unauthorizedError"
+	,	"invalidItemsFieldsAdvancedName"
+
+		// utils.js
+	,	"stringtodate"
+
+		// SuiteScript API
+	,	"nlapiGetUser"
+	,	"nlapiGetLogin"
+	,	"nlapiGetCache"
+	,	"nlapiGetContext"
+	,	"nlapiGetWebContainer"
+
+	,	"nlapiCreateError"
+	,	"nlapiCreateRecord"
+	,	"nlapiCreateSearch"
+
+	,	"nlapiSearchRecord"
+	,	"nlobjSearchFilter"
+	,	"nlobjSearchColumn"
+	,	"nlobjError"
+	
+	,	"nlapiSubmitField"
+	,	"nlapiSubmitRecord"
+	,	"nlapiDateToString"
+	,	"nlapiTransformRecord"
+
+	,	"nlapiLoadRecord"
+	,	"nlapiLookupField"
+	,	"nlapiLogExecution"
+	,	"nlapiRequestURL"
+
+	,	"nlapiStringToDate"
+	]
+
+,	"forin": true
+,	"noarg": true
+,	"noempty": true
+,	"eqeqeq": true
+,	"bitwise": false
+,	"strict": true
+,	"undef": true
+,	"unused": true
+,	"curly": true
+,	"browser": true
+,	"quotmark": "single"
+,	"maxerr": 50
+,	"laxcomma": true
+,	"expr": true
+,	"loopfunc": true
+,	"newcap": false
+}

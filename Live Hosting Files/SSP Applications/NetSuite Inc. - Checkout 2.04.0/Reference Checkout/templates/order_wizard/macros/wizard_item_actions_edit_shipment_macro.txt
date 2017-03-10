@@ -1,0 +1,7 @@
+<% registerMacro('wizardItemActionEditShiptment', function (options) { %>
+	<%
+		var line = options.line;
+	%>
+	<button class="btn btn-link block-button" data-action="remove-item" data-item-id="<%= line.id %>"><%= _('Remove from Shipment').translate() %></button>
+	<button class="btn btn-link block-button" data-action="move-item" style="visibility:hidden"><%= _('Move').translate() %></button>
+<% }) %>

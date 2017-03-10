@@ -1,0 +1,14 @@
+<%
+registerMacro('showItemOptions', function ( options )
+{
+	_.each(options, function (option)
+	{
+%>
+	<div>
+		<span><%= _(option.name).translate() %>: </span>
+		<b><%= option.displayvalue || option.value %></b>
+	</div>
+<%
+	})
+})
+%>

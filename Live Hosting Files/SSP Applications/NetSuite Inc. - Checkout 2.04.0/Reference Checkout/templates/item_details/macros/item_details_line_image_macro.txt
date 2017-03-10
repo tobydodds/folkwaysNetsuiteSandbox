@@ -1,0 +1,6 @@
+<% registerMacro('itemDetailsLineImage', function (options) { %>
+
+	<% var item = options.item; %>
+	
+	<img src="<%= options.application.resizeImage(item.get('_thumbnail').url, 'tinythumb') %>" alt="<%= item.get('_thumbnail').altimagetext %>">
+<% }) %>

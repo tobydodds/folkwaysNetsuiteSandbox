@@ -1,0 +1,18 @@
+<%
+registerMacro('homeBanner', function (config_banners)
+{
+	var banners = _.isArray( config_banners ) ? config_banners : [ config_banners ]
+	,	random_banner = banners[ Math.floor( Math.random() * banners.length ) ];
+
+	if ( random_banner ) {
+		if ( random_banner.linkUrl ) {
+%>
+	<a href="<%= random_banner.linkUrl %>" target="<%= random_banner.linkTarget %>"><img src="<%= random_banner.imageSource %>"></a>
+<%		} else { %>
+	<img src="<%= random_banner.imageSource %>">
+<%		} %>
+	<hr>
+<%
+	}
+})
+%>

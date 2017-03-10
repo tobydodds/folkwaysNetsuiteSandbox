@@ -1,0 +1,21 @@
+<% registerMacro('itemEditableQuantity', function (options) { %>
+	<%
+		var is_read_only = options.isReadOnly
+		,	item_id = options.itemId
+		,	total_quantity = options.quantity
+		,	current_quantity = options.currentQuantity || total_quantity;
+	%>
+	<%if (total_quantity > 1) { %>
+		<% if (is_read_only) { %>
+			<%= _('<span class="show-phone grey-color">Quantity: </span>$(0)').translate(total_quantity) %>
+		<% } else { %>
+			<div>
+				<div class="editable-quantity-label"><%= _('Quantity:').translate() %></div>
+				<input type="number" name="quantity" data-item-id="<%= item_id %>" id="quantity-<%= item_id %>" data-action="split-quantity" class="item-editable-quantity" value="<%= current_quantity %>" min="1" max="<%= total_quantity %>">
+				<span class="quantity-tail"><%= _(' of <span class="total-quantity" >$(0)</span>').translate(total_quantity) %></span>
+			</div>
+		<% } %>
+	<% } else { %>
+		<%= _('<span class="show-phone grey-color">Qty: </span>$(0)').translate(total_quantity) %>
+	<% } %>
+<% }) %>

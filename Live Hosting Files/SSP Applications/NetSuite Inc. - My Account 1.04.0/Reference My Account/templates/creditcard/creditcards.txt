@@ -1,0 +1,23 @@
+<%
+	var defaults = _.compact( _.uniq( [ view.collection.where({ ccdefault: 'T' })[0] ] ) )
+	,	other_creditcards = view.collection.where({ ccdefault: 'F' });
+%>
+<section>
+	<h3 class="no-margin-top"><%= view.page_header %></h3>
+	<a href="/" class="back-btn"><%= _('&lt; Back to Account').translate() %></a>
+	<hr class="divider-small">
+	<p><a class="btn btn-link add-credit-card" href="/creditcards/new" data-toggle="show-in-modal"><%= _('Add Credit Card').translate() %></a></p>
+	<% 
+	var cellWrap = function (item) { 
+		return creditcard(item, {
+			icons: view.options.application.getConfig('creditCardIcons')
+		,	showActions: true
+		,	showDefaults: view.options.application.getConfig('currentTouchpoint') === 'customercenter'
+		}); 
+	} 
+	if ( defaults.length ) { %>
+		<%= displayInRows(defaults, cellWrap, view.options.application.getConfig('itemsPerRow')) %>
+		<hr class="divider-small">
+	<% } %>
+	<%= displayInRows(other_creditcards, cellWrap, view.options.application.getConfig('itemsPerRow')) %>
+</section>

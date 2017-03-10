@@ -1,0 +1,163 @@
+<%
+	var application = view.application
+	,	model = view.model
+	,	lines = model.get('lines')
+	,	summary = model.get('summary')
+	,	status = model.get('status').label
+	,	total_formatted = summary.total_formatted
+	,	internalid = model.get('internalid')
+	,	created_from = model.get('createdfrom')
+	,	created_from_url = view.getLinkedRecordUrl()
+	,	collapse_elements = application.getConfig('collapseElements')
+	,	download_url = _.getDownloadPdfUrl({
+			asset: 'return-details'
+		,	id: internalid
+		});
+%>
+<div class="content return-authorization-details-view">
+	<h3>
+		<%= view.page_header %>
+		<div class="pull-right strong billing-actions hidden-phone">
+			<span class="return-authorization-details-amount"><%= total_formatted %></span>
+		</div>
+	</h3>
+	<a href="/returns" class="back-btn">
+		<%= _('&lt; Back to Returns').translate() %>
+	</a>
+
+	<hr class="divider-small">
+	<div data-type="alert-placeholder"></div>
+
+	<div class="header-information">
+		<div class="row-fluid">
+			<div class="span6">
+				<% if (created_from) { %>
+				<p class="info return-created-from">
+					<%= _('From:').translate() %> <a href="<%= created_from_url %>"><%= _('$(0) #$(1)').translate(view.getCreatedFromLabel(), created_from.tranid) %></a>
+				</p>
+				<% } %>
+				<p class="info">
+					<%= _('Date of request:').translate() %> <span class="return-date"><%= model.get('date') %></span>
+				</p>
+				<p class="info visible-phone">
+					<%= _('Amount: <span class="amount strong">$(0)</span>').translate(total_formatted) %>
+				</p>
+			</div>
+			<div class="span6 col-status-record">
+				<%= _('Status: <span class="status">$(0)</span>').translate(status) %>
+			</div>
+		</div>
+	</div>
+
+	<div class="row-fluid" name="return-content-layout">
+		<div class="span8 transaction-summary-one-col-tablet return-details-notmodal-container">
+			<!-- ITEMS -->
+			<%= SC.macros.itemDetailsLine({
+					collapse_elements: collapse_elements
+				,	lines:  lines
+				,	wellHeader: lines && 1 < lines.length ? _('Products ($(0))').translate(lines.length) : _('Product ($(0))').translate(lines.length)
+				,	columns: [
+						{
+							content: '&nbsp;'
+						,	className: 'span2'
+						}
+					,	{
+							addStart: '<div class="span10 item-details-line-information">'
+						,	content: _('Product').translate()
+						,	className: 'span5 popover-content popover-heading'
+						}
+					,	{
+							content: _('Qty').translate()
+						,	className: 'span1 popover-content popover-heading col-quantity'
+						}
+					,	{
+							content: _('Reason').translate()
+						,	className: 'span3 popover-content popover-heading col-reason'
+						}
+					,	{
+							content: _('Amount').translate()
+						,	className: 'span3 popover-content popover-heading col-amount'
+						,	addEnd: '</div>'
+						}
+					]
+				,	columnsBody: [
+						{
+							content: function(line) {return SC.macros.itemDetailsLineImage({item: line.get('item'), application: application})}
+						,	className: 'span2 item-details-line-image thumbnail item-image'
+						}
+					,	{
+							addStart: '<div class="span10 item-details-line-information">'
+						,	content: function(line) {return SC.macros.itemDetailsLineProduct({item: line.get('item')})}
+						,	className: 'span5 popover-content'
+						}
+					,	{
+							content: function(line) {return _('<span class="visible-phone text-light">Quantity:</span> <span class="item-quantity">$(0)</span>').translate(line.get('quantity'))}
+						,	className: 'span1 popover-content col-quantity'
+						}
+					,	{
+							content: function(line) {return _('<span class="visible-phone text-light">Reason:</span> <span class="item-reason">$(0)</span>').translate(line.get('reason'))}
+						,	className: 'span3 popover-content col-reason'
+						}
+					,	{
+							content: function(line) {return _('<span class="visible-phone text-light">Amount:</span> <span class="item-amount">$(0)</span>').translate(line.get('amount_formatted'))}
+						,	className: 'span3 popover-content col-amount'
+						,	addEnd: '</div>'
+						}
+					]
+				,	comment:  model.get('comment')
+			}) %>
+		</div>
+
+		<div class="span4 transaction-summary-one-col-tablet">
+			<div class="row-fluid">
+				<div class="list-header summary-container">
+					<div class="nav-tabs row-fluid control-group strong return-details-summary-header">
+						<%= _('SUMMARY').translate() %>
+					</div>
+
+					<div class="row-fluid control-group">
+						<div class="span8">
+							<%= _('Tax Total').translate() %>
+						</div>
+
+						<div class="span4 pull-right text-right tax-total">
+							<%= summary.taxtotal_formatted %>
+						</div>
+					</div>
+
+					<div class="nav-tabs row-fluid control-group">
+						<div class="span8">
+							<%= _('Shipping & Handling').translate() %>
+						</div>
+
+						<div class="span4 text-right shipping-cost">
+							<%= summary.shippingamount_formatted %>
+						</div>
+					</div>
+
+					<div class="row-fluid control-group strong total">
+						<div class="span8 text-strong">
+							<%= _('TOTAL').translate() %>
+						</div>
+
+						<div class="span4 text-right last total">
+							<%= total_formatted %>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<!-- DOWNLOAD AS PDF -->
+				<div class="span4 transaction-summary-one-col-desktop margin-top-10">
+					<a class="btn btn-large btn-block hidden-phone download-pdf" data-stdnav target="_blank" href="<%= download_url %>"><%= _('Download as PDF').translate() %></a>
+				</div>
+
+				<% if (model.get('isCancelable')) { %>
+				<div class="span4 transaction-summary-one-col-desktop margin-top-10">
+					<button class="btn btn-large btn-block" data-action="cancel"><%= _('Cancel Request').translate() %></button>
+				</div>
+				<% } %>
+			</div>
+		</div>
+	</div>
+</div>

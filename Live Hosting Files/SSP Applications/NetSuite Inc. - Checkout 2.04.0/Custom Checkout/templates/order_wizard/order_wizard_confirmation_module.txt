@@ -1,0 +1,22 @@
+<%
+	var continueURL = '/'
+	,	touchpoint = true;
+	if(SC.ENVIRONMENT.siteSettings.iswsdk && SC.ENVIRONMENT.siteSettings.wsdkcancelcarturl){
+		continueURL = SC.ENVIRONMENT.siteSettings.wsdkcancelcarturl;
+		touchpoint = false;
+	}
+%>
+<div class="alert alert-block alert-success fade in thanks-panel-info">
+	<h3 style="font-family: Verdana, Geneva, sans-serif;" class="alert-heading"><%= _('Thank you for shopping with us!').translate() %></h3>
+		<p style="font-family: Verdana, Geneva, sans-serif;margin-top:10px;"><%= _('Your order number is <big><strong>#$(0)</strong></big>').translate(view.confirmationNumber) %>
+	</p>
+	<p style="font-family: Verdana, Geneva, sans-serif;margin-top:10px"><%= _('We received your order and will process it shortly.').translate() %></p>
+	<p style="font-family: Verdana, Geneva, sans-serif;margin-top:10px"><%= _('A confirmation email will arrive momentarily.').translate() %></p>
+	<p style="margin-top:10px"><b>Download Notice:</b> If you purchased a digital download as part of your order please <a href="http://www.folkways.si.edu/my-downloads/smithsonian">click here</a> to access your files.<p>
+	<p style="margin-top:10px"><b>Membership Notice:</b> If you purchased a Folkways membership, we will update your account by the end of the next business day and send an email confirming your membership and access to free downloads and special discounts.</p>
+	<p style="margin-top:10px"><b>Pre-Order Notice:</b> If you purchased a pre-order that included pre-release downloads as part of your order please <a href="http://www.folkways.si.edu/my-downloads/smithsonian">click here</a> to access your files.<p>
+	<p style="margin-top:10px">Please contact us at <a href="mailto:SmithsonianFolkways@SI.EDU">SmithsonianFolkways@SI.EDU</a> with any questions.</p>	
+	<p style="margin-top:10px">
+		<a class="btn btn-success" href="http://www.folkways.si.edu">Continue Shopping</a>
+	</p>
+</div>

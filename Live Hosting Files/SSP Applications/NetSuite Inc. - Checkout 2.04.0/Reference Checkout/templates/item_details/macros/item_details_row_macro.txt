@@ -1,0 +1,91 @@
+<% registerMacro('itemDetailsRow', function (options) { %>
+	<%
+		var link_attributes = false
+		,	line = options.line
+		,	item = line.get('item')
+		,	application = options.application
+		,	line_class = options.itemClass || 'item-table-row'
+		,	indexes = options.indexes || []
+		,	url = item.get('_isPurchasable') ? item.get('_url') : null
+		,	check_span_class
+		,	image_span_class
+		,	item_title_span_class
+		,	item_quantity_span_class
+		,	item_quantity_macro = _.isFunction(options.quantityMacro) ? options.quantityMacro : function(){}
+		,	item_unit_price_span_class
+		,	item_total_price_span_class
+		,	item_remove_btn_span_class
+		,	show_item_name_as_link = options.showItemNameAsLink
+		,	index_classes = 0
+		,	name;
+
+		check_span_class = options.showSelectable ? 'span'+ (indexes[index_classes++] || 1) : '';
+		image_span_class = 'span'+ (indexes[index_classes++] || 2);
+		item_title_span_class = 'span'+ (indexes[index_classes++] || 4);
+		item_quantity_span_class = 'span'+ (indexes[index_classes++] || 1);
+		item_unit_price_span_class = 'span'+ (indexes[index_classes++] || 2);
+		item_total_price_span_class =  'span'+ (indexes[index_classes++] || (options.showRemove ? 2 : 3 ) );
+		item_remove_btn_span_class = 'span' + (indexes[index_classes++] || 1);
+
+
+		if (url && SC.ENVIRONMENT.siteType === 'ADVANCED' && show_item_name_as_link)
+		{
+			link_attributes = SC.Utils.objectToAtrributes({
+				href: url
+			,	data: {
+					touchpoint: 'home'
+				,	hashtag: '#' + url
+				}
+			});
+		}
+		else if (url && show_item_name_as_link)
+		{
+			link_attributes = SC.Utils.objectToAtrributes({
+				href: url
+			});
+		}
+
+		if (link_attributes)
+		{
+			name = '<a ' + link_attributes + ' data-type="navigate-product" >' + item.get('_name') + '</a>';
+		}
+		else
+		{
+			name = '<span data-type="navigate-product" >' + item.get('_name') + '</span>';
+		}
+	%>
+
+	<div class="row-fluid <%= line_class %> nav-tabs <%= options.showSelectable ? 'selectable': '' %> <%= line.get('check') ? 'active' : ''%>" data-id="<%= line.get('internalid')%>" data-item-id="<%= item.get('internalid') %>" data-item-type="<%= item.get('itemtype') %>" data-action="select-unselected-item" >
+		<% if (options.showSelectable) { %>
+		<div class="<%= check_span_class %> item-selector">
+			<input data-type="checkbox-item-selector" type="checkbox" <%= line.get('check') ? 'checked' : ''%> />
+		</div>
+		<% } %>
+
+		<div class="<%= image_span_class %> item-image">
+			<img src="<%= application.resizeImage(item.get('_thumbnail').url, 'tinythumb') %>" class="item-image-control" alt="<%= item.get('_thumbnail').altimagetext %>">
+		</div>
+
+		<div class="<%= item_title_span_class %> item-description ">
+			<div class="item-displayname"><%= name %></div>
+			<div class="visible-phone orange-color"><%= line.get('rate_formatted') %></div>
+			<div class="item-id grey-color"><%= _('<span data-type="sku-label">SKU:</span> #<span data-type="sku-value">$(0)</span>').translate(item.get('_sku')) %></div>
+			<div data-type="item-options-container">
+			<%= item.renderAllOptionSelected() %>
+			</div>
+		</div>
+
+		<div class="<%= item_quantity_span_class %> item-quantity">
+			<%= item_quantity_macro() %>
+		</div>
+		<div class="<%= item_unit_price_span_class %> hidden-phone orange-color item-unitprice"><%= _('<span class="show-phone">Unit Price: </span>$(0)').translate(line.get('rate_formatted')) %></div>
+
+		<div class="<%= item_total_price_span_class %> item-totalprice"><%= _('<span class="show-phone grey-color">Amount: </span>$(0)').translate(line.get('amount_formatted')) %></div>
+
+		<% if (options.showRemove) { %>
+		<div class="<%= item_remove_btn_span_class %>">
+			<button type="button" data-action="remove-item" data-item-id="<%= line.get('internalid') %>" class="close btn-remove-item">×</button>
+		</div>
+		<% } %>
+	</div>
+<% }) %>

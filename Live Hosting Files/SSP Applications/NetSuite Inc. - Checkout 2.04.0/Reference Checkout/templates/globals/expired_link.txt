@@ -1,0 +1,14 @@
+<div class="view-header">
+	<% if (view.page_header) { %>
+	<h1><%= view.page_header %></h1>
+	<% } %>
+	<div id="main-banner" class="main-banner"></div>
+</div>
+<div id="internal-error-content" class="view-body internal-error-content">
+	<%= view.options.message || _('Sorry, we could not load the content you requested.').translate() %>
+</div>
+<hr>
+<div>
+	<a class="btn btn-primary btn-large" href="#" data-touchpoint="login"><%= _('Login').translate() %></a>
+	<a class="btn btn-primary btn-large" href="#" data-touchpoint="register"><%= _('Register').translate() %></a>
+</div>

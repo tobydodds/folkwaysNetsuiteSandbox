@@ -1,0 +1,129 @@
+<%
+var application = view.application
+,	collapse_elements = application.getConfig('collapseElements')
+,	lines = view.model.get('lines');
+%>
+
+<% if (view.showShippingInfo()) { %>
+	<section class="shipments-shipping-details">
+		<div class="row-fluid shipments-shipping-details-body">
+			<div class="span6 shipments-shipping-address">
+				<h4 class="section-header">
+					<%= _('Shipping Address').translate() %>
+				</h4>
+
+				<%
+					var shipping_address = view.profile.get('addresses').get(view.model.get('shipaddress'));
+				%>
+
+				<% if (shipping_address) { %>
+					<%= address(shipping_address, {
+						hideActions: true
+					,	hideDefaults: true
+					,	manage: 'shipaddress'
+					}) %>
+
+					<% if (view.options.edit_url) { %>
+						<a data-action="edit-module" href="<%- view.options.edit_url %>?force=true" class="btn-edit-address">
+							<%= _('Edit').translate() %>
+						</a>
+					<% } %>
+				<% } else { %>
+					<a data-action="edit-module" href="<%- view.options.edit_url %>?force=true" class="btn-edit-address">
+						<%= _('Please select a valid shipping address').translate() %>
+					</a>
+				<% } %>
+
+			</div>
+			<div class="span6 shipments-shipping-method">
+					<h4 class="section-header">
+						<%= _('Shipping Method').translate() %>
+					</h4>
+					<%
+						var shipmethods = view.model.get('shipmethods')
+						,	selected_shipmethod = shipmethods.findWhere({internalid: view.model.get('shipmethod')});
+					%>
+					<% if (view.options.edit_url) { %>
+						<select id="delivery-options" class="input-large" name="delivery-options">
+							<% if (!selected_shipmethod) { %>
+								<option><%= _('Please select a shipping method').translate() %></option>
+							<% } %>
+							<% shipmethods.each(function (shipmethod) { %>
+								<option value="<%- shipmethod.get('internalid')%>"
+									<%= view.model.get('shipmethod') === shipmethod.get('internalid') ? 'selected' : '' %>>
+									<%= shipmethod.get('name') %>: <%= shipmethod.get('rate_formatted') %>
+								</option>
+							<% }); %>
+						</select>
+					<% } else if (selected_shipmethod) { %>
+						<span class="shipmethod-name">
+							<%= selected_shipmethod.get('name') %>
+						</span>
+						:
+						<span class="shipmethod-rate">
+							<%= selected_shipmethod.get('rate_formatted') %>
+						</span>
+
+					<% } %>
+			</div>
+		</div>
+	</section>
+<% } %>
+
+<section class="shipments-cart-details">
+	<!--<div class="shipments-cart-details-header"></div>-->
+	<!-- ITEMS -->
+	<%= SC.macros.itemDetailsLine({
+			application: application
+		,	lines:  lines
+		,	wellHeader: lines && 1 < lines.length ? _('Products ($(0))').translate(lines.length) : _('Product ($(0))').translate(lines.length)
+		,	columns: [
+				{
+					content: '&nbsp;'
+				,	className: 'span2'
+				}
+			,	{
+					addStart: '<div class="span10 item-details-line-information">'
+				,	content: _('Product').translate()
+				,	className: 'span5 popover-content popover-heading'
+				}
+			,	{
+					content: _('Qty').translate()
+				,	className: 'span1 popover-content popover-heading col-quantity'
+				}
+			,	{
+					content: _('Unit price').translate()
+				,	className: 'span3 popover-content popover-heading col-amount'
+				}
+			,	{
+					content: _('Amount').translate()
+				,	className: 'span3 popover-content popover-heading col-amount'
+				,	addEnd: '</div>'
+				}
+			]
+		,	columnsBody: [
+				{
+					content: function(line) {return SC.macros.itemDetailsLineImage({item: line.get('item'), application: application})}
+				,	className: 'span2 item-details-line-image thumbnail item-image'
+				}
+			,	{
+					addStart: '<div class="span10 item-details-line-information">'
+				,	content: function(line) {return SC.macros.itemDetailsLineProduct({item: line.get('item'), hideLink: view.options.hide_item_link})}
+				,	className: 'span5 popover-content'
+				}
+			,	{
+					content: function(line) {return _('<span class="visible-phone text-light">Quantity</span> <span class="item-quantity">$(0)</span>').translate(line.get('quantity'))}
+				,	className: 'span1 popover-content col-quantity'
+				}
+			,	{
+					content: function(line) {return _('<span class="visible-phone text-light">Unit price</span> <span class="item-price">$(0)</span>').translate(line.get('rate_formatted'))}
+				,	className: 'span3 popover-content col-amount'
+				}
+			,	{
+					content: function(line) {return _('<span class="visible-phone text-light">Amount</span> <span class="item-amount">$(0)</span>').translate(line.get('amount_formatted'))}
+				,	className: 'span3 popover-content col-amount'
+				,	addEnd: '</div>'
+				}
+			]
+		}) %>
+</section>

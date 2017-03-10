@@ -1,0 +1,16 @@
+<% registerMacro('itemActionsReturnQuantity', function (options) { %>
+<%
+	var item_id = options.itemId
+	,	line_id = options.lineId
+	,	item_quantity = options.itemQuantity || 1
+	,	parent_internalid = options.parentInternalId
+	,	format_options = _.map(options.formatOptions, function ( option )
+							{
+								return option.id +'='+ option.value;
+							}).join(',');
+%>
+	<input type="hidden" name="item_id" data-item-id="<%= item_id %>" data-parent-id="<%= parent_internalid %>" data-item-options="<%= format_options %>">
+	<label class="text-light"><%= _('Qty:').translate() %></label>
+	<input type="number" name="item_quantity" id="" data-toggle="quantity" data-line-id="<%- line_id %>" class="input-mini" value="<%= item_quantity %>" min="1" max="999">
+
+<% }) %>

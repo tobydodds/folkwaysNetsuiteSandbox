@@ -1,0 +1,38 @@
+<% registerMacro('footer', function (view) { %>
+<%
+	var environment = SC.ENVIRONMENT
+
+	,	hosts = environment.availableHosts
+	,	languages = environment.availableLanguages
+	,	currencies = environment.availableCurrencies
+
+	,	nav_links = view.application.getConfig('footerNavigation', [])
+	,	macros = SC.macros;
+%>
+
+<div class="container">
+<footer id="site-footer" class="site-footer row-fluid">
+
+	<div class="privacy">
+		We use the NetSuite secure shopping cart. <a href="http://www.netsuite.com/portal/resource/terms-of-service.shtml" target="_blank">Terms of Service</a> and <a href="http://www.netsuite.com/portal/privacy.shtml" target="_blank">Privacy Policy</a> apply.
+	</div>
+
+    <div class="row-fluid" id="footer-container">
+
+		<ul>
+			<li><a href="http://www.si.edu/" target="new">(c) 2016 Smithsonian Institution</a></li>
+			<li>|</li>
+			<li><a href="http://www.si.edu/copyright/" target="new">Copyright</a></li>
+			<li>|</li>
+			<li><a href="http://www.folkways.si.edu/folkways-staff/smithsonian">Contact</a></li>
+			<li>|</li>
+			<li><a href="http://www.si.edu/privacy/" target="new">Privacy</a></li>
+			<li>|</li>
+			<li><a href="http://www.folkways.si.edu/production-credits/smithsonian">Credits</a></li>
+		</ul>
+
+	</div>
+</footer>
+</div>
+
+<% }) %>

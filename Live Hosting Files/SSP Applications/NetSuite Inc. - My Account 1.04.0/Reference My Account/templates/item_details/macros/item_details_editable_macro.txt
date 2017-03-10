@@ -1,0 +1,44 @@
+<% registerMacro('itemDetailsEditable', function (options) { %>
+<%
+	var line = options.line
+	,	application = options.application
+	,	is_selectable = options.isSelectable
+	,	item = line.get('item')
+	,	item_options = line.get('options') || line.get('options_object')
+	,	is_active = line.get('checked')
+	,	quantity = line.get('quantity')
+	,	internalid = line.get('internalid')
+	,	thumbnail =  item.get('_thumbnail')
+	,	line_extra_class = options.extraLineClass || ''
+	,	item_price = line.get('rate_formatted') || item.get('_price_formatted')
+	,	deatils_macro = _.isFunction(options.detailsMacro) ? options.detailsMacro : function(){}
+	,	extra_item_details_macro = _.isFunction(options.extraItemDetailsMacro) ? options.extraItemDetailsMacro : function (){}
+	,	actions_macro = _.isFunction(options.actionsMacro) ? options.actionsMacro : function(){}
+	,	item_link = SC.macros.itemLinkName({item: item, showLinkeable: options.showItemLinkeable || true});
+%>
+<div class="product-details <%= line_extra_class %> payment-table-row <%= is_selectable ? 'selectable' : '' %> <%= is_active ? 'active' : '' %>" data-type="return-line" data-item="<%= item.get('_id')%>" data-id="<%- internalid %>" style="cursor: pointer;">
+	<div class="row-fluid">
+		<div class="span2">
+			<% if (is_selectable) { %>
+				<input type="checkbox" name="" value="<%= internalid %>" <%= is_active ? 'checked' : '' %> style="margin-right: 20px;">
+			<% } %>
+			<img class="product-image" src="<%= application.resizeImage(thumbnail.url, 'tinythumb') %>" alt="<%= thumbnail.altimagetext %>" data-toggle="false">
+		</div>
+		<div class="span3">
+			<%= item_link %>
+			<p class="product-price text-highlight"><%= item_price %></p>
+			<p class="text-light"><%= _('SKU: #$(0)').translate(item.get('_sku')) %></p>
+			<% if (item_options && item_options.length) { %>
+				<div class="text-light"><%= SC.macros.showItemOptions(item_options) %></div>
+			<% } %>
+			<%= extra_item_details_macro(options) %>
+		</div>
+		<div class="span3 product-quantity">
+			<%= deatils_macro(options) %>
+		</div>
+		<div class="span4 control-group">
+			<%= actions_macro(options) %>
+		</div>
+	</div>
+</div>
+<% }) %>

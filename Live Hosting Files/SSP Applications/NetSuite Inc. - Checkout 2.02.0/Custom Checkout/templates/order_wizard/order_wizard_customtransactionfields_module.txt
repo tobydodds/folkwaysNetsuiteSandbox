@@ -1,0 +1,16 @@
+<div class="row-fluid">
+
+	<div class="span6 wizard-save-paper">
+
+		<h4 class="section-header">
+			<%=_('Save Paper! ').translate()%>
+		</h4>
+
+		<label class="send-by-email">
+			<span class="send-by-email-label"><%= _('Please E-mail Me My Receipt').translate() %></span>
+			<input type="checkbox" value="" id="send-by-email" name="send-by-email">
+		</label>
+
+	</div>
+
+</div>

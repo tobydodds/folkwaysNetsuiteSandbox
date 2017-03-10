@@ -1,0 +1,29 @@
+/* NewGen Business Solutions edits */
+
+#main .wizard-step-link a {
+    color: #E07007;
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    font-family: Verdana;
+    font-size: 10px;
+}
+
+#main .help-block, #main .help-inline {
+    color: #6b6b6b;
+    font-size: 10px;
+}
+
+#main a {
+    color: #526C79;
+    text-decoration: none;
+}
+
+a:hover, #main a:focus {
+    color: #E07007 !important;
+    text-decoration: none !important;
+}
+
+#main .item-list-navigable:hover {
+    background-color: #fff;
+}

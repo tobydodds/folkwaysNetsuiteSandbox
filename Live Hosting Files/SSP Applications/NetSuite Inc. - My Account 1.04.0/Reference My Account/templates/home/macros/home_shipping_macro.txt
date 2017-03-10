@@ -1,0 +1,25 @@
+<% registerMacro('homeShipping', function(view) { %>
+	<article class="well home-shipping">
+		<div class="well-header">
+			<h4><%= _('Shipping').translate() %></h4>
+		</div>
+		<% if (!view.defaultShippingAddress) { %>
+		<div class="well-body">
+			<p><%= _('We have no default address on file for this account.').translate() %></p>			
+		</div>
+		<div class="well-footer">
+			<a href="/addressbook/new" data-toggle="show-in-modal"><%= _('Create New Address').translate() %></a>
+		</div>
+		<% } else { %>
+		<div class="well-body">
+			<%= SC.macros.address(view.defaultShippingAddress, {
+					hideDefaults: true
+				,	hideActions: true
+			}) %>
+		</div>
+		<div class="well-footer">
+			<a href="/addressbook/<%= view.defaultShippingAddress.get('internalid') %>" data-toggle="show-in-modal"><%= _('Edit').translate() %></a>
+		</div>
+		<% } %>
+	</article>
+<%})%>

@@ -1,0 +1,251 @@
+@baseSpace: 9px;
+
+.item-list-navigable {
+	border-bottom: @grayLighter 1px solid;
+	padding: @baseSpace 0;
+	position: relative;
+
+	@media (min-width: 768px) {
+		.clearfix();
+	}
+
+	form, label, input {
+		margin-bottom: 0;
+	}
+
+	p {
+		margin: 0 0 2px;
+	}
+
+	.item {
+		@media (min-width: 768px) {
+			float: left;
+			margin-right: 5%;
+			width: 65%;
+		}
+
+		@media (min-width: 980px) {
+			width: 75%;
+		}
+	}
+
+	.thumbnail {
+		float: left;
+		margin-right: 5%;
+		width: 100px;
+
+		@media (max-width: 980px) {
+			width: 80px;
+		}
+	}
+
+	.info {
+		float: left;
+		width: 60%;
+
+		@media (min-width: 980px) {
+			width: 63%;
+		}
+	}
+
+	.details {
+		@media (min-width: 768px) {
+			float: left;
+			margin-right: 5%;
+			width: 50%;
+		}
+	}
+
+	.summary {
+		@media (min-width: 768px) {
+			float: left;
+			width: 45%;
+		}
+	}
+
+	.name, .price, .sku, .quantity, .cart-option {
+		margin-bottom: @baseSpace / 2;
+	}
+
+	.option-label, .sku, .quantity, .amount-label {
+		.text-light;
+	}
+
+	input, select {
+		@media (max-width: 980px) {
+			height: 44px;
+			min-height: 44px;
+		}
+	}
+
+	input[name="quantity"] {
+		display: inline-block;
+		width: 70px;
+	}
+
+	.alert-placeholder {
+		clear: both;
+	}
+
+	.actions {
+		@media (min-width: 768px) {
+			float: left;
+			width: 30%;
+		}
+	
+		@media (max-width: 767px) {
+			.dropdown-menu {
+				width: 10
+			}
+		}
+
+		@media (max-width: 980px) {
+			a, button {
+				padding: 12px;
+				margin-top: 0;
+				line-height: normal;
+
+				.caret {
+					margin-top: 8px;
+				}
+			}
+		}
+
+		@media (min-width: 980px) {
+			width: 20%;
+		}
+		.btn-group {
+			width: 100%;
+			a {
+				display: inline-block;
+				width: 80%
+			}
+			button {
+				display: inline-block;
+				width: 20%
+			}
+			ul li button {
+				width: 100%;
+				text-align: left;
+				border: 0;
+				background: none;
+
+				&:hover {
+					background: @grayLighter;
+				}
+			}
+		}
+	}
+
+	.btn {
+		box-sizing: border-box;
+		display: block;
+		margin: @baseSpace 0 0;
+		padding: 4px 0;
+		width: 100%;
+	}
+
+	&:hover {
+		background-color: @itemHover;
+	}
+
+	&:last-child{
+		border-bottom:none;
+	}
+}
+
+.selectable {
+	padding: 10px 0px 18px 30px;
+
+	.thumbnail {
+		width: 100px;
+		margin-right: 10px;
+
+		@media (max-width: 980px) {
+			width: 80px;
+		}
+	}
+
+	.input-checkbox {
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		width: 20px;
+		text-align: center;
+	}
+
+	.item {
+		width: 600px;
+		margin-right: 10px;
+
+		@media (max-width: 1180px) {
+			width: 500px;
+		}
+
+		@media (max-width: 980px) {
+			width: 340px;
+		}
+		@media (max-width: 767px) {
+			
+		}
+
+		@media (max-width: 480px) {
+			float: left;
+			width: 94%;
+		}
+	}
+
+	.summary {
+		@media (max-width: 480px) {
+			float: left;
+			width: 65%;
+		}
+	}
+
+	.actions {
+		width: 150px;
+		display: inline-block;
+		
+		.apply-reason {
+			display: block;
+		}
+		
+		.actions-return-authorization {
+			width: 135px;
+		}
+
+		#reason {
+			margin: 0 0 7px 0;
+
+			@media (min-width: 768px) {
+				width: 148px;
+			}				
+		}
+		input.actions-return-authorization {
+			margin-bottom: 5px;
+		}
+
+		@media (max-width: 480px) {
+			margin-left: 90px;
+		}
+
+		@media (max-width: 510px) {
+			position: absolute;
+			right: 0px;
+		}
+
+		@media (max-width: 480px) {
+			position: relative;
+			width: 200px;
+		}
+
+		@media (min-width: 1200px) {
+			width: 185px;
+		}
+	}
+	
+	&.active, &.active:hover {
+		background-color: @itemActive;
+	}
+}
+

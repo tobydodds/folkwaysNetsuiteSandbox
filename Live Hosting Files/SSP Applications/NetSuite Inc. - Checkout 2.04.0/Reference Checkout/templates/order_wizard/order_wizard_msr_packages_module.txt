@@ -1,0 +1,63 @@
+<%
+	var packages = view.getPackages()
+	,	application = view.wizard.application
+	,	expanded_packages = view.expanded_packages
+	,	address_id
+	,	is_package_expanded
+	,	selected_address
+	,	items;
+%>
+
+<div data-type="package-condensed-view-container">
+<% _.each(packages, function (package) { %>
+	<%
+		address_id = package.address.id;
+		selected_address = package.address;
+		items = package.lines;
+		is_package_expanded = expanded_packages.indexOf(+selected_address.get('internalid')) >= 0;
+	%>
+
+
+	<div class="row-fluid control-group" data-type="accordion" id="accordion<%= address_id %>">
+		<div class="well" data-action="items-expander" data-address-id="<%= selected_address.get('internalid') %>">
+			<div class="well-header">
+				<span> <%= _('Shipment: ').translate() %> <span data-type="package-condensed-address-title"> <%= package.address.get('fullname') + " - " + package.address.get('addr1') %> </span> <span class="package-condensed-address-title-items-count">(<%= items.length %>)</span> </span>
+				<a href="#" class="pull-right"><i class="icon-plus<%= is_package_expanded ? ' icon-minus' : '' %>"></i></a>
+			</div>
+		</div>
+
+		<div id="accordion-body<%= address_id %>" data-content="items-body" <%= is_package_expanded ? '' : 'style="display: none;"' %>>
+			<div class="row-fluid" data-type="package" >
+				<div data-type="package-style" class="clearfix multishipto-package">
+					<div class="span12">
+						<div class="row-fluid" data-type="address-container">
+							<div class="span7">
+							<%= address(selected_address,  {
+								hideActions: true
+							,	hideDefaults: true
+							,	manage: 'shipaddress'
+							}) %>
+							</div>
+							<div class="span5">
+							</div>
+						</div>
+
+						<div class="row-fluid control-group items-container" data-type="accordion">
+
+							<% _.each(items, function(line) { %>
+								<%= itemDetailsCondensed({
+										application: application
+									,	line: line
+									,	actionMacro: wizardItemActionEditShiptment
+									,	showItemsDetails: true
+									}) %>
+							<% }) %>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<% }) %>
+</div>

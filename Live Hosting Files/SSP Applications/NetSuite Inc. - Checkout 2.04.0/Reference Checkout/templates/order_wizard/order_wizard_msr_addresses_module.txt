@@ -1,0 +1,87 @@
+<%
+	var selected_address = view.address
+	,	hide_if_valid_addresses = view.options.hide_if_valid_addresses // When hide address list in a single link (used in OPC)
+	,	hide_addresses = view.hide_addresses //When specified to hide address in a link, this flag control if the use expand it or not
+	,	has_enough_valid_addresses = view.hasEnoughValidAddresses()
+	,	address_book = view.getAddressesToShow();
+%>
+<% if (!view.options.hide_title && view.getTitle()) { %>
+	<h3 class="section-header">
+		<%= view.getTitle() %>
+	</h3>
+<% } %>
+
+<div data-type="alert-placeholder-module"></div>
+
+<% if (hide_if_valid_addresses && has_enough_valid_addresses && hide_addresses) { %>
+	<a data-type="add-edit-addreses-link"> <%= _('Add/Edit Addresses').translate() %> </a>
+<% } else if (address_book.length) { %>
+	<div id="address-module-list-placeholder" <%= view.manage ? 'data-manage=' + view.manage : ''%> class="address-module-list-placeholder">
+		<% if (has_enough_valid_addresses) { %>
+		<p>
+			<a class="btn btn-link add-new-address" href="/addressbook/new" data-toggle="show-in-modal">
+				<%= _('Add New Address').translate() %>
+			</a>
+		</p>
+		<% } %>
+
+		<%
+			// Wrap the address address macro to pass options in
+			var addressWrap = function (address) {
+				return SC.macros['address'](address, {
+					showSelect: false
+				,	showMultiSelect: false
+				,	selectMessage: view.selectMessage
+				,	hideDefaults: true
+				,	showError: true
+				});
+			}
+		%>
+
+		<%= displayInRows(address_book.models, addressWrap, view.itemsPerRow || 2) %>
+
+		<% if (!has_enough_valid_addresses) { %>
+			<p class="new-address-title"><%= _('New Address').translate() %></p>
+			<div id="address-module-form-placeholder" <%= view.manage ? 'data-manage=' + view.manage : ''%> class="address-module-form-placeholder">
+				<form method="POST">
+				<%= addressFrom(selected_address, {
+						countries: view.wizard.application.getConfig('siteSettings.countries')
+					,	manage: view.manage
+					,	hideDefaults: true
+				}) %>
+				</form>
+
+				<% if (view.showSaveButton) { %>
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary multishipto-save-address-btn" data-action="submit">
+							<%= _('Save Address').translate() %>
+						</button>
+					</div>
+				<% } %>
+
+			</div>
+		<% } %>
+
+	</div>
+<% } else { %>
+	<p class="new-address-title"><%= _('New Address').translate() %></p>
+	<div id="address-module-form-placeholder" <%= view.manage ? 'data-manage=' + view.manage : ''%> class="address-module-form-placeholder">
+
+		<form method="POST">
+		<%= addressFrom(selected_address, {
+				countries: view.wizard.application.getConfig('siteSettings.countries')
+			,	manage: view.manage
+			,	hideDefaults: true
+		}) %>
+		</form>
+
+		<% if (view.showSaveButton) { %>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary multishipto-save-address-btn" data-action="submit">
+					<%= _('Save Address').translate() %>
+				</button>
+			</div>
+		<% } %>
+
+	</div>
+<% } %>

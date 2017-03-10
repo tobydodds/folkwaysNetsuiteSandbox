@@ -1,0 +1,163 @@
+.list-header {
+	border: 1px solid #eaeaea;
+	padding: 20px 10px;
+
+	input, select {
+		margin: 0;
+	}
+
+	select {
+		width: 140px;		
+	}
+
+	label {
+		margin-bottom: 0;
+		margin-right: 5px;
+
+		&.v-center {
+			margin-top: 5px;
+		}
+
+		@media (max-width: 767px) {
+			margin-bottom: 10px;
+			margin-right: 0;
+			text-align: left;
+			width: 49%;
+
+			input[type="date"] {
+				display: block;
+				width: 100%;
+			}
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+			
+			&[for="to"] {
+			  margin-left: 2%;
+			}
+		}
+	}
+
+	button.btn {
+		padding: 5px;
+	}
+
+	@media (max-width: 768px) {
+		select, input {
+			height: 44px;
+		}
+
+		.list-header-sort-btn {
+			display: block;
+			float: left;
+			margin: 10px 0 5px;
+			text-align: center;
+			width: 18%;
+			height: 44px;
+		}
+
+		.list-header-sort-btn i {
+			float: none;
+		}
+
+		.list-header-filter {
+			display: block;
+			width: 100%;
+		}
+
+		.list-header-sort {
+			display: block;
+			float: left;
+			margin: 10px 2% 5px 0;
+			width: 80%;
+		}
+	}
+}
+
+.header-row .list-header .list-header-sort-btn {
+	background: #e6e6e6;
+
+	i:first-child {
+		margin-top: 0;
+		margin-right: -4px;
+	}
+
+	@media (max-width: 767px) {
+		display: block;
+		float: left;
+		margin: 10px 0 5px;
+		text-align: center;
+		width: 18%;
+
+		i {
+			float: none;
+		}
+	}
+}
+
+.list-header-slim {
+	border-width: 0 0 1px;
+	padding: 9px;
+
+	label.v-center {
+		margin-top: 0;
+	}
+}
+
+.input-date {
+	width: 120px;
+
+	&::-webkit-inner-spin-button, 
+	::-webkit-outer-spin-button { 
+	   -webkit-appearance: none; 
+	  	margin: 0; 
+	}
+}
+
+.header-row {
+	border: 1px solid #eaeaea;
+
+	.header-expander {
+		padding: 7px 10px;
+	}
+	
+	.btn-group {
+		@media (max-width: 767px) {
+			.btn {
+				width: auto;
+				.caret {
+					margin-top: 15px;
+				}
+			}
+		}
+	}
+	.list-header {
+		border: none;
+		padding: 5px 10px;
+
+		@media (max-width: 767px) {
+			padding: 10px 10px 0;
+		}
+	}
+}
+
+.list-header-select-all {
+	margin: 10px 0 0 10px;
+
+	input[type=checkbox]{
+		margin: 0;
+	}
+}
+
+.dropdown-menu-right {
+	right: 0;
+	left: auto;
+}
+
+@media (max-width: @screen-small){
+	
+	.dropdown-toggle-touch{
+		min-width:44px;
+	}
+}

@@ -1,0 +1,35 @@
+<% registerMacro('itemLinkName', function (options) { %>
+<%
+	var	item = options.item
+	,	url = item.get('_isPurchasable') ? item.get('_url') : null
+	,	show_item_name_as_link = options.showLinkeable;
+
+	if (url && SC.ENVIRONMENT.siteType === 'ADVANCED' && show_item_name_as_link)
+	{
+		link_attributes = SC.Utils.objectToAtrributes({
+			href: url
+		,	data: {
+				touchpoint: 'home'
+			,	hashtag: '#' + url
+			}
+		});
+	}
+	else if (url && show_item_name_as_link)
+	{
+		link_attributes = SC.Utils.objectToAtrributes({
+			href: url
+		});
+	}
+
+	if (link_attributes)
+	{
+		name = '<a ' + link_attributes + ' data-type="navigate-product" >' + item.get('_name') + '</a>';
+	}
+	else
+	{
+		name = '<span data-type="navigate-product" >' + item.get('_name') + '</span>';
+	} %>
+
+	<%= name %>
+
+<% }) %>

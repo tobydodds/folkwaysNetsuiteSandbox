@@ -1,0 +1,6 @@
+<% registerMacro('itemActionsAddToCartReOrder', function () {
+ %>
+	<div class="add-to-cart-button-container">
+		<button class="btn btn-primary pull-right add-to-cart-btn"><%= _('Add to Cart').translate() %></button>
+	</div>
+<% }) %>

@@ -1,0 +1,16 @@
+<% registerMacro('itemActionsEditQuantity', function (options) { %>
+	<%
+		var is_active = options.isActive
+		,	return_quantity = options.returnQuantity
+		,	quantity = options.lineQuantity;
+	%>
+
+	<% if (is_active) { %>
+		<p class="text-light"><%= _('Qty to return:').translate() %></p>
+		<input class="" type="number" name="quantity" data-toggle="false" id="" value="<%= return_quantity || quantity %>" min="1" max="<%= quantity %>" style="margin-bottom: 4px; width: 40px;">
+		<span><%= _('of $(0)').translate(quantity) %></span>
+		<p><small class="text-light"><%= _('Edit quantity to return').translate() %></small></p>
+	<% } else { %>
+		<p><span class="text-light"><%= _('Qty to return:').translate() %></span> <b><%= _('$(0) of $(0)').translate(quantity) %></b></p>
+	<% } %>
+<% }) %>
