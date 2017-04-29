@@ -180,15 +180,17 @@ Application.defineModel('Account', {
 		,	password: password
 		});
 
-		var orchardUrl = nlapiOutboundSSO('customsso_orchard');		
 		var user = Application.getModel('Profile').get();
 		user.isLoggedIn = session.isLoggedIn() ? 'T' : 'F';
 		user.isRecognized = session.isRecognized() ? 'T' : 'F';
+		
+		var currentHostString = Application.getEnvironment(session, request).currentHostString;
+		var suiteletScriptUrl= nlapiResolveURL('SUITELET','customscript_orchard_sso','customdeploy_orchard_sso_5',false);
 
 		var ret = {
-			touchpoints: session.getSiteSettings(['touchpoints']).touchpoints
-		,	user: user,
-			orchardUrl : orchardUrl
+			touchpoints: session.getSiteSettings(['touchpoints']).touchpoints,
+			user: user,
+			suiteletScriptUrl: "https://" + currentHostString + suiteletScriptUrl
 		};
 
 		return ret;
@@ -262,7 +264,7 @@ Application.defineModel('Account', {
 		};
 	}
 
-,	register: function (user_data)
+,	register: function (user_data, isSSO)
 	{
 		'use strict';
 
@@ -321,6 +323,16 @@ Application.defineModel('Account', {
 		var user = Application.getModel('Profile').get();
 		user.isLoggedIn = session.isLoggedIn() ? 'T' : 'F';
 		user.isRecognized = session.isRecognized() ? 'T' : 'F';
+
+		if (isSSO)
+		{
+			var currentHostString = Application.getEnvironment(session, request).currentHostString;
+			var suiteletScriptUrl = nlapiResolveURL('SUITELET', 'customscript_orchard_sso', 'customdeploy_orchard_sso_5', false);
+
+			return {
+				suiteletScriptUrl: "https://" + currentHostString + suiteletScriptUrl
+			}
+		}
 
 		return {
 			touchpoints: session.getSiteSettings(['touchpoints']).touchpoints

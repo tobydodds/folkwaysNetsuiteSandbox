@@ -9,6 +9,7 @@ function service (request)
 	try
 	{
 		var method = request.getMethod()
+		,	sso = request.getParameter('sso')
 		//  Account model is defined on ssp library Models.js
 		,	Account = Application.getModel('Account')
 		,	data = JSON.parse(request.getBody() || '{}');
@@ -17,7 +18,10 @@ function service (request)
 		{
 			case 'POST':
 				//Handles the login and send the response
-				Application.sendContent(Account.register(data));
+				if (sso == 'true')
+				Application.sendContent(Account.register(data,true));
+				else
+				Application.sendContent(Account.register(data,false));
 			break;
 
 			default: 

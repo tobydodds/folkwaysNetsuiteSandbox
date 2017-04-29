@@ -21655,22 +21655,7 @@ define('Account.Login.Model', function ()
 
 	return Backbone.Model.extend({
 
-		urlRoot: function ()
-		{
-            function getParameterByName(name, url) {
-                if (!url) {
-                  url = window.location.href;
-                }
-                name = name.replace(/[\[\]]/g, "\\$&");
-                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                    results = regex.exec(url);
-                if (!results) return null;
-                if (!results[2]) return '';
-                return decodeURIComponent(results[2].replace(/\+/g, " "));
-            }
-
-			return _.getAbsoluteUrl('services/account-login.ss') + '?n=' + SC.ENVIRONMENT.siteSettings.siteid + '&sso=' + getParameterByName('sso');
-		}
+		urlRoot: _.getAbsoluteUrl('services/account-login.ss') + '?n=' + SC.ENVIRONMENT.siteSettings.siteid + '&sso=' + _.getParameterByName(window.location.href, 'sso')
 
 	,	validation: {
 			email: { required: true, pattern: 'email', msg: _('Valid Email is required').translate() }
@@ -21689,7 +21674,7 @@ define('Account.Register.Model', function ()
 
 	return Backbone.Model.extend({
 
-		urlRoot: _.getAbsoluteUrl('services/account-register.ss')
+		urlRoot: _.getAbsoluteUrl('services/account-register.ss') + '?sso=' + _.getParameterByName(window.location.href, 'sso')
 
 	,	validation: {
 			firstname: { required: true, msg: _('First Name is required').translate() }
@@ -27375,6 +27360,21 @@ define('LoginRegister.Views'
 		}
 	};
 
+	function suiteletScriptCall(suiteletScriptUrl)
+	{	
+		jQuery.ajax({
+			url:suiteletScriptUrl,
+			type: 'GET',
+			dataType: 'text',
+			success: function(text) {
+				window.location.href = text;
+			},
+			error: function () {
+				alert("An error occured during requesting the authentintication token.");
+			}
+		});
+	};
+
 	var Views = {};
 
 	Views.Login = Backbone.View.extend({
@@ -27436,34 +27436,35 @@ define('LoginRegister.Views'
 			// Track Login Event
 			this.trackEvent(function ()
 			{
-               if (response.orchardUrl) {
-                   alert ('Hello Orchard');
-               }   
-               else
-                if (url_options.is === 'checkout' || url_options.origin === 'checkout')
+				if (response.suiteletScriptUrl)
 				{
-					self.refreshApplication(response);
-				}
+					suiteletScriptCall(response.suiteletScriptUrl);
+					}
 				else
 				{
-					// if we know from which touchpoint the user is coming from
-					if (url_options.origin && touchpoints[url_options.origin])
+					if (url_options.is === 'checkout' || url_options.origin === 'checkout')
 					{
-						// we save the url to that touchpoint
-						var url = touchpoints[url_options.origin];
-						// if there is an specific hash
-						if (url_options.origin_hash)
-						{
-							// we add it to the url as a fragment
-							url = _.addParamsToUrl(url, {fragment: url_options.origin_hash});
-						}
-
-						window.location.href = url;
+						self.refreshApplication(response);
 					}
 					else
 					{
-						// otherwise we need to take it to the customer center
-						window.location.href = touchpoints.customercenter;
+						// if we know from which touchpoint the user is coming from
+						if (url_options.origin && touchpoints[url_options.origin]) {
+							// we save the url to that touchpoint
+							var url = touchpoints[url_options.origin];
+							// if there is an specific hash
+							if (url_options.origin_hash)
+						{
+							// we add it to the url as a fragment
+								url = _.addParamsToUrl(url, { fragment: url_options.origin_hash });
+							}
+							window.location.href = url;
+						}
+						else
+						{
+							// otherwise we need to take it to the customer center
+							window.location.href = touchpoints.customercenter;
+						}
 					}
 				}
 			});
@@ -27534,47 +27535,54 @@ define('LoginRegister.Views'
 		{
 			var url_options = _.parseUrlOptions(window.location.search)
 			,	touchpoints = response.touchpoints
-			,	application = this.application;
+			, application = this.application;
 
-			if (url_options.is && url_options.is === 'checkout')
+			if (response.suiteletScriptUrl)
 			{
-				response.user && application.getUser().set(response.user);
-				response.cart && application.getCart().set(response.cart);
-				response.address && application.getUser().get('addresses').reset(response.address);
-				response.creditcard && application.getUser().get('creditcards').reset(response.creditcard);
-
-				// Track Guest Checkout Event
-				this.trackEvent(function ()
-				{
-					application.Configuration.currentTouchpoint = 'checkout';
-					Backbone.history.navigate('', { trigger: true });
-				});
+			    suiteletScriptCall(response.suiteletScriptUrl);
 			}
 			else
 			{
-				// Track Login Event
-				this.trackEvent(function ()
-				{
-					// if we know from which touchpoint the user is coming from
-					if (url_options.origin && touchpoints[url_options.origin])
-					{
-						// we save the url to that touchpoint
-						var url = touchpoints[url_options.origin];
-						// if there is an specific hash
-						if (url_options.origin_hash)
-						{
-							// we add it to the url as a fragment
-							url = _.addParamsToUrl(url, {fragment: url_options.origin_hash});
-						}
+			    if (url_options.is && url_options.is === 'checkout')
+			    {
+					response.user && application.getUser().set(response.user);
+					response.cart && application.getCart().set(response.cart);
+					response.address && application.getUser().get('addresses').reset(response.address);
+					response.creditcard && application.getUser().get('creditcards').reset(response.creditcard);
 
-						window.location.href = url;
-					}
-					else
+					// Track Guest Checkout Event
+					this.trackEvent(function ()
 					{
-						// otherwise we need to take it to the customer center
-						window.location.href = touchpoints.customercenter;
-					}
-				});
+						application.Configuration.currentTouchpoint = 'checkout';
+						Backbone.history.navigate('', { trigger: true });
+					});
+				}
+				else
+				{
+					// Track Login Event
+					this.trackEvent(function ()
+					{
+						// if we know from which touchpoint the user is coming from
+						if (url_options.origin && touchpoints[url_options.origin])
+						{
+							// we save the url to that touchpoint
+							var url = touchpoints[url_options.origin];
+							// if there is an specific hash
+							if (url_options.origin_hash)
+							{
+								// we add it to the url as a fragment
+								url = _.addParamsToUrl(url, {fragment: url_options.origin_hash});
+							}
+
+							window.location.href = url;
+						}
+						else
+						{
+							// otherwise we need to take it to the customer center
+							window.location.href = touchpoints.customercenter;
+						}
+					});
+				}
 			}
 		}
 	});
